@@ -1,4 +1,21 @@
-/* Body Container */
+/* Body Container
+   Updated to:
+   - Keep desktop layout on small screens
+   - Reduce font sizes, paddings and control heights for small screens
+   - Remove side gaps (containers flush to viewport)
+   - Prevent mobile text auto-zoom
+*/
+
+/* Prevent automatic mobile text resizing / zooming */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Body wrapper */
 .body-container {
   display: flex;
   flex-direction: column;
@@ -8,9 +25,10 @@
   margin: 0 auto;
   min-height: calc(100vh - 160px); /* Adjust based on header/footer height */
   box-sizing: border-box;
+  width: 100%;
 }
 
-/* Tab Content Area */
+/* Tab content area (desktop layout preserved) */
 .tab-content {
   width: 100%;
   max-width: 800px;
@@ -22,34 +40,106 @@
   border: 1px solid #eaeaea;
   animation: fadeIn 0.3s ease-out;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .tab-content:hover {
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.12);
 }
 
-/* Responsive Design */
+/* Make sure inner forms and components can use full width, no extra container gaps */
+.tab-content .container,
+.tab-content .url-shortener,
+.tab-content form,
+.tab-content .shortener-form {
+  width: 100%;
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* Responsive adjustments — keep desktop layout but reduce sizes on narrow screens */
 @media (max-width: 768px) {
   .body-container {
-    padding: 2rem 1rem;
+    padding: 2rem 0.5rem;
     min-height: calc(100vh - 140px);
+    max-width: 100%;
   }
-  
+
   .tab-content {
     padding: 1.75rem;
     margin-top: 2rem;
+    max-width: 100%;
+    border-radius: 10px;
   }
 }
 
+/* Mobile: preserve desktop layout, shrink typography & UI elements,
+   remove container side gaps so layout appears "desktop" (but smaller). */
 @media (max-width: 480px) {
+  /* flush containers to viewport edges */
   .body-container {
-    padding: 1.5rem 0.75rem;
+    padding: 1.25rem 0;
+    max-width: 100vw;
+    width: 100%;
+    margin: 0;
   }
-  
+
   .tab-content {
-    padding: 1.5rem;
-    margin-top: 1.5rem;
+    padding: 12px;
+    margin-top: 12px;
+    max-width: 100vw;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    overflow-x: auto; /* allow inner desktop-like layout to be scrollable horizontally if needed */
   }
+
+  /* Reduce general type sizes within this block rather than scaling the entire page */
+  .tab-content,
+  .tab-content p,
+  .tab-content label,
+  .tab-content li,
+  .tab-content span,
+  .tab-content input,
+  .tab-content button,
+  .tab-content select,
+  .tab-content textarea {
+    font-size: 13px !important;
+  }
+
+  /* Buttons / actionable items smaller and more compact */
+  .tab-content .btn,
+  .tab-content .generate-btn,
+  .tab-content .mode-btn,
+  .tab-content .section-toggle-btn {
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    min-height: 34px !important;
+  }
+
+  /* Reduce heading sizes but keep layout structure */
+  .tab-content h1 { font-size: 1.6rem !important; }
+  .tab-content h2 { font-size: 1.2rem !important; }
+  .tab-content h3 { font-size: 1.05rem !important; }
+
+  /* Make sure internal max-widths don't add side gaps */
+  .tab-content .container,
+  .tab-content .card {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Reduce card padding for mobile but keep card layout */
+  .tab-content .card { padding: 10px; border-radius: 8px; }
+
+  /* Ensure forms don't cause zoom when focusing */
+  input, textarea, select { -webkit-text-size-adjust: none; font-size: 13px; }
+
+  /* Prevent extra horizontal margins on nested elements */
+  .tab-content * { box-sizing: border-box; }
 }
 
 /* Animation */
