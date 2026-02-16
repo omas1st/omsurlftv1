@@ -52,12 +52,12 @@
   background: transparent;
   border: none;
   border-radius: var(--url-radius-sm);
-  font-size: 1rem; /* Increased for readability */
+  font-size: 1rem;
   font-weight: 600;
   color: var(--url-gray);
   cursor: pointer;
   transition: var(--url-transition);
-  min-height: 44px; /* Ensure tap target size */
+  min-height: 44px;
 }
 
 .mode-btn:hover {
@@ -72,7 +72,7 @@
 }
 
 .mode-icon {
-  font-size: 1.25rem; /* Slightly larger icons */
+  font-size: 1.25rem;
 }
 
 /* Form Styling */
@@ -145,14 +145,14 @@
 .url-input,
 .alias-input {
   width: 100%;
-  padding: 1rem 2.5rem 1rem 1rem; /* Increased padding for height */
+  padding: 1rem 2.5rem 1rem 1rem;
   border: 2px solid var(--url-border);
   border-radius: var(--url-radius-md);
   font-size: 1rem;
   font-family: inherit;
   transition: var(--url-transition);
   background: white;
-  min-height: 48px; /* Comfortable touch target */
+  min-height: 48px;
 }
 
 .url-input:focus,
@@ -209,7 +209,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.25rem; /* Larger padding */
+  padding: 1rem 1.25rem;
   background: var(--url-light);
   border: 1px solid var(--url-border);
   border-radius: var(--url-radius-md);
@@ -356,7 +356,7 @@
   cursor: pointer;
   transition: var(--url-transition);
   box-shadow: 0 4px 6px rgba(58, 134, 255, 0.2);
-  min-height: 52px; /* Extra height for primary action */
+  min-height: 52px;
 }
 
 .generate-btn:hover:not(:disabled) {
@@ -419,66 +419,67 @@
   }
 }
 
-/* Responsive Design – Mobile First, adjusted for smart tablet-like appearance */
+/* ===== MOBILE‑FIRST RESPONSIVE ===== */
 @media (max-width: 640px) {
   .url-shortener {
-    padding: 1rem; /* Ensure space around edges */
+    padding: 1rem;
   }
-  
+
   .shortener-form {
-    padding: 1.5rem; /* Slightly less padding but still comfortable */
+    padding: 1.5rem;
   }
-  
+
   .form-title {
-    font-size: 1.5rem; /* Keep heading readable */
+    font-size: 1.5rem;
   }
-  
+
   .mode-btn {
     font-size: 0.95rem;
     padding: 0.75rem 0.5rem;
+    min-height: 40px;
   }
-  
+
   .mode-icon {
     font-size: 1.1rem;
   }
-  
+
   .form-label {
     font-size: 0.95rem;
   }
-  
+
   .url-input,
   .alias-input {
     font-size: 0.95rem;
     padding: 0.875rem 2.25rem 0.875rem 0.875rem;
     min-height: 44px;
   }
-  
+
   .preview-url {
     font-size: 0.85rem;
     padding: 0.625rem;
   }
-  
+
   .section-toggle-btn {
     padding: 0.875rem 1rem;
     font-size: 0.95rem;
     min-height: 44px;
   }
-  
+
   .generate-btn {
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
     min-height: 48px;
   }
-  
+
   .login-prompt-message {
     font-size: 1rem;
   }
-  
+
   .login-prompt-features li {
     font-size: 0.9rem;
     padding: 0.625rem 0.875rem;
   }
-  
+
   .login-prompt-btn {
     padding: 0.75rem 1.75rem;
     font-size: 0.95rem;
@@ -490,84 +491,80 @@
   .url-shortener {
     padding: 0.75rem;
   }
-  
+
   .shortener-form {
     padding: 1.25rem;
   }
-  
+
   .form-title {
     font-size: 1.35rem;
-    flex-direction: row; /* Keep icon and text inline */
-    gap: 0.5rem;
   }
-  
+
   .mode-toggle {
     flex-direction: column;
     gap: 0.25rem;
   }
-  
+
   .mode-btn {
     padding: 0.625rem 0.5rem;
     font-size: 0.9rem;
+    min-height: 38px;
   }
-  
+
   .preview-url {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
   }
-  
-  /* Improved placeholder readability on very small screens */
+
   .url-input::placeholder,
   .alias-input::placeholder {
     font-size: 0.75rem;
-    line-height: 1.3;
-    white-space: normal; /* Allow wrapping if needed */
   }
-  
+
   .login-prompt-features {
     grid-template-columns: 1fr;
   }
 }
 
-/* Extra small devices (max-width: 360px) – maintain usability */
 @media (max-width: 360px) {
   .url-shortener {
     padding: 0.5rem;
   }
-  
+
   .shortener-form {
     padding: 1rem;
   }
-  
+
   .form-title {
     font-size: 1.25rem;
   }
-  
+
   .mode-btn {
     font-size: 0.85rem;
     padding: 0.5rem 0.25rem;
+    min-height: 36px;
   }
-  
+
   .url-input,
   .alias-input {
     font-size: 0.9rem;
     padding: 0.75rem 2rem 0.75rem 0.75rem;
     min-height: 40px;
   }
-  
+
   .section-toggle-btn {
     font-size: 0.9rem;
     padding: 0.75rem;
     min-height: 40px;
   }
-  
+
   .generate-btn {
     font-size: 0.95rem;
     padding: 0.75rem 1.25rem;
     min-height: 44px;
   }
-  
+
   .login-prompt-btn {
     font-size: 0.9rem;
     padding: 0.625rem 1.25rem;
@@ -583,9 +580,4 @@
 .generate-btn:focus-visible {
   outline: 2px solid var(--url-primary);
   outline-offset: 2px;
-}
-
-/* Loading state enhancements */
-.generate-btn.loading .btn-icon {
-  display: none;
 }

@@ -43,7 +43,6 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   font-size: 16px;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Container */
@@ -91,7 +90,6 @@ body {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,7 +110,7 @@ body {
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: var(--shadow-2xl);
+  box-shadow: var(--shadow-xl);
   border: 1px solid var(--border-color);
   animation: modalSlideUp 0.3s ease;
 }
@@ -242,11 +240,61 @@ body {
 }
 
 /* ============ RESPONSIVE DESIGN ============ */
-/* Tablet and Mobile */
 @media (max-width: 1024px) {
   .container {
     padding: 0 20px;
   }
+}
+
+/* Fullscreen mobile modals */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-start;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .modal {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .fullscreen-modal-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--card-bg);
+    z-index: 10000;
+    overflow-y: auto;
+  }
+
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.mobile-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card-bg);
+  z-index: 10000;
+  overflow-y: auto;
+}
+
+body.no-scroll {
+  overflow: hidden;
 }
 
 /* Print */
@@ -259,262 +307,3 @@ body {
     display: none !important;
   }
 }
-
-/* ===========================
-   Fullscreen mobile modals
-   =========================== */
-@media (max-width: 768px) {
-  .modal-overlay {
-    align-items: flex-start;
-    padding: 0;
-    overflow-y: auto;
-  }
-  
-  .modal {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 0;
-    margin: 0;
-  }
-  
-  /* For popups that should be fullscreen on mobile */
-  .fullscreen-modal-mobile {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--card-bg);
-    z-index: 10000;
-    overflow-y: auto;
-  }
-  
-  /* Prevent body scroll when modal is open */
-  body.modal-open {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-  }
-}
-
-/* Utility class for fullscreen modals on mobile */
-.mobile-fullscreen {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--card-bg);
-  z-index: 10000;
-  overflow-y: auto;
-}
-
-/* Prevent scrolling on body when modal is open */
-body.no-scroll {
-  overflow: hidden;
-}
-
-/* ===========================
-   MOBILE SCALING (like 80% zoom)
-   Applies to screens ≤ 640px
-   =========================== */
-@media (max-width: 640px) {
-  /* Scale down the base font size */
-  html {
-    font-size: 85%; /* 16px * 0.85 ≈ 13.6px – feels like 85% zoom */
-  }
-
-  /* Prevent horizontal scroll */
-  body,
-  .App,
-  .main-content,
-  .container {
-    overflow-x: hidden;
-  }
-
-  /* ===== HomePage adjustments ===== */
-  .homepage .hero-content h1 {
-    font-size: 2rem; /* was 2.5rem */
-  }
-  .homepage .subtitle {
-    font-size: 0.9rem; /* was 1.125rem */
-  }
-  .homepage .feature-card h3 {
-    font-size: 1rem; /* was 1.25rem */
-  }
-  .homepage .feature-card p {
-    font-size: 0.85rem; /* was 1rem */
-  }
-  .homepage .hero-section {
-    padding: 3rem 0.75rem; /* was 4rem 1rem */
-  }
-  .homepage .main-section {
-    padding: 1.5rem 0.75rem; /* was 2rem 1rem */
-  }
-  .homepage .features-section {
-    padding: 2rem 0.75rem; /* was 3rem 1rem */
-  }
-
-  /* ===== URLShortener adjustments ===== */
-  .url-shortener {
-    padding: 1rem; /* was 1.5rem */
-  }
-  .shortener-form {
-    padding: 1.5rem; /* was 2rem */
-  }
-  .form-title {
-    font-size: 1.4rem; /* was 1.75rem */
-  }
-  .mode-btn {
-    padding: 0.7rem 0.5rem; /* was 0.875rem 1rem */
-    font-size: 0.8rem; /* was 1rem */
-    min-height: 38px; /* was 44px */
-  }
-  .url-input,
-  .alias-input {
-    padding: 0.8rem 2rem 0.8rem 0.8rem; /* was 1rem 2.5rem 1rem 1rem */
-    font-size: 0.85rem; /* was 1rem */
-    min-height: 42px; /* was 48px */
-  }
-  .input-icon {
-    font-size: 0.9rem; /* was 1rem */
-  }
-  .preview-url {
-    padding: 0.6rem; /* was 0.75rem */
-    font-size: 0.8rem; /* was 0.9rem */
-  }
-  .section-toggle-btn {
-    padding: 0.8rem 1rem; /* was 1rem 1.25rem */
-    font-size: 0.85rem; /* was 1rem */
-    min-height: 42px; /* was 48px */
-  }
-  .generate-btn {
-    padding: 0.8rem 1.5rem; /* was 1rem 2rem */
-    font-size: 0.9rem; /* was 1.1rem */
-    min-height: 44px; /* was 52px */
-  }
-  .login-prompt-message {
-    font-size: 0.9rem; /* was 1.1rem */
-  }
-  .login-prompt-features li {
-    padding: 0.6rem 0.8rem; /* was 0.75rem 1rem */
-    font-size: 0.8rem; /* was 0.95rem */
-  }
-  .login-prompt-btn {
-    padding: 0.7rem 1.5rem; /* was 0.875rem 2rem */
-    font-size: 0.85rem; /* was 1rem */
-    min-height: 40px; /* was 48px */
-  }
-
-  /* ===== BulkUpload adjustments ===== */
-  .bulk-upload {
-    padding: 15px; /* was 20px */
-  }
-  .upload-area {
-    padding: 30px 10px; /* was 40px 15px */
-  }
-  .upload-icon {
-    font-size: 28px; /* was 36px */
-  }
-  .browse-btn,
-  .sample-btn,
-  .generate-btn {
-    padding: 6px 10px; /* was 6px 12px */
-    font-size: 0.8rem; /* was 0.9em */
-  }
-  .file-selected span {
-    font-size: 0.85rem; /* was 0.95em */
-  }
-  .file-selected button {
-    padding: 3px 8px; /* was 4px 10px */
-    font-size: 0.75rem; /* was 0.85em */
-  }
-  .errors-container,
-  .results-container {
-    padding: 12px; /* was 15px */
-  }
-  .results-header h4 {
-    font-size: 0.9rem; /* was 1em */
-  }
-  .table-header {
-    padding: 8px; /* was 10px */
-    font-size: 0.8rem; /* was 0.9em */
-    gap: 5px; /* was 10px */
-  }
-  .result-item {
-    padding: 8px; /* was 10px */
-    font-size: 0.8rem; /* was 0.9em */
-    gap: 5px; /* was 10px */
-  }
-  .col-alias code {
-    font-size: 0.75rem; /* was 0.85em */
-    padding: 2px 4px; /* was 3px 6px */
-  }
-  .copy-btn-small,
-  .open-btn {
-    width: 26px; /* was 30px */
-    height: 26px; /* was 30px */
-    font-size: 12px; /* was 14px */
-  }
-  .download-csv-btn {
-    padding: 4px 8px; /* was 6px 12px */
-    font-size: 0.75rem; /* was 0.85em */
-  }
-
-  /* ===== Global index.css / App adjustments ===== */
-  .main-content {
-    padding: 10px; /* was 20px */
-  }
-  .btn {
-    padding: 8px 16px; /* was 10px 20px */
-    font-size: 12px; /* was 14px */
-    height: 32px; /* was 36px */
-  }
-  .card {
-    padding: 15px; /* was 20px */
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    padding: 8px 12px; /* was 10px 15px */
-    font-size: 12px; /* was 14px */
-  }
-  .form-group label {
-    font-size: 12px; /* was 14px */
-  }
-  .modal {
-    max-width: 95%; /* allow modal to be slightly narrower */
-  }
-  .modal-header h3 {
-    font-size: 1.1rem; /* was 1.25rem */
-  }
-}
-
-/* ===========================
-   Optional: Remove aggressive scaling
-   (commented out to avoid conflicts)
-   =========================== */
-/* 
-@media (max-width: 420px) {
-  .app-scale-root {
-    transform: scale(0.5);
-    transform-origin: 0 0;
-    width: 200%;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-  }
-
-  html, body, #root {
-    height: 100%;
-    min-height: 100%;
-  }
-
-  .help-form-container {
-    bottom: 60px;
-    right: 8px;
-  }
-}
-*/
