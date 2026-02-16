@@ -539,3 +539,124 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* UserDashboard.css – add at the end */
+
+/* Mobile scaling: keep desktop layout, shrink elements */
+@media (max-width: 480px) {
+  .user-dashboard {
+    padding: 0.5rem;
+    gap: 1rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .welcome-section h1 {
+    font-size: 1.2rem;
+  }
+
+  .welcome-message {
+    font-size: 0.7rem;
+  }
+
+  .info-card {
+    min-width: 120px;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .info-card .card-icon {
+    font-size: 1.2rem;
+  }
+
+  .info-card .card-content h3 {
+    font-size: 0.55rem;
+  }
+
+  .info-card .balance,
+  .info-card .tier {
+    font-size: 0.7rem;
+  }
+
+  /* Keep stats grid as 4 columns, just shrink */
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+  }
+
+  .stat-card {
+    padding: 0.25rem;
+  }
+
+  .stat-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.2rem;
+  }
+
+  .stat-info h3 {
+    font-size: 0.55rem;
+  }
+
+  .stat-value {
+    font-size: 0.7rem;
+  }
+
+  .stats-chart-container {
+    padding: 0.5rem;
+  }
+
+  /* Keep quick actions as 4 columns */
+  .actions-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.25rem;
+  }
+
+  .action-card {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .action-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .action-card h3 {
+    font-size: 0.6rem;
+  }
+
+  .action-card p {
+    font-size: 0.5rem;
+  }
+
+  /* Recent URLs table – reduce font and padding */
+  .urls-table {
+    font-size: 0.6rem;
+  }
+
+  .table-header,
+  .table-row {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.6rem;
+  }
+
+  .action-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+
+  .no-urls {
+    padding: 1rem;
+  }
+
+  .no-urls p:first-child {
+    font-size: 0.7rem;
+  }
+
+  .no-urls p:last-child {
+    font-size: 0.6rem;
+  }
+}

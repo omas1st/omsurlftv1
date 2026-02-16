@@ -307,3 +307,43 @@ body.no-scroll {
     display: none !important;
   }
 }
+
+/* App.css – add at the end */
+
+/* Mobile scaling: preserve desktop layout but shrink everything */
+@media (max-width: 480px) {
+  html {
+    font-size: 80%; /* 16px → 12.8px – feels like 80% zoom */
+  }
+
+  body,
+  .App,
+  .main-content,
+  .container {
+    overflow-x: hidden;
+  }
+
+  /* Global element adjustments */
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    height: 32px;
+  }
+
+  .card {
+    padding: 1rem;
+  }
+
+  .modal {
+    max-width: 95%;
+  }
+
+  .modal-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+}

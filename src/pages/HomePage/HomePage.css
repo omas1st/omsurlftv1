@@ -222,3 +222,56 @@
     font-size: 0.85rem;
   }
 }
+
+/* HomePage.css – add at the end */
+
+/* Mobile scaling: keep desktop layout, shrink elements */
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 2rem 0.5rem 1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+    max-width: 100%;
+  }
+
+  .main-section {
+    padding: 1rem 0.5rem;
+  }
+
+  .features-section {
+    padding: 1.5rem 0.5rem;
+    max-width: 100%;
+  }
+
+  /* Keep 4 columns on mobile */
+  .features-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+
+  .feature-card {
+    padding: 0.75rem 0.25rem;
+  }
+
+  .feature-icon {
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .feature-card h3 {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .feature-card p {
+    font-size: 0.65rem;
+    line-height: 1.3;
+  }
+}
