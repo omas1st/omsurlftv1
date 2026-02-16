@@ -1,5 +1,5 @@
 // src/components/AdvancedFeatures/AdvancedFeatures.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import AnalyticsPrivate from './AnalyticsPrivate';
 import PasswordProtection from './PasswordProtection';
@@ -11,7 +11,6 @@ import './AdvancedFeatures.css';
 
 const AdvancedFeatures = ({ features, onChange, user }) => {
   const { t } = useTranslation();
-  const [customDomain, setCustomDomain] = useState(features.customDomain || '');
 
   const handleAnalyticsPrivateChange = (isPrivate) => {
     onChange({
@@ -66,7 +65,7 @@ const AdvancedFeatures = ({ features, onChange, user }) => {
 
   return (
     <div className="advanced-features">
-      <div className="features-grid">
+      <div className="features-list">
         <div className="feature-section">
           <PasswordProtection
             password={features.password || ''}
@@ -108,24 +107,6 @@ const AdvancedFeatures = ({ features, onChange, user }) => {
             rules={features.multipleDestinationRules || []}
             onChange={handleMultipleDestinationChange}
           />
-        </div>
-
-        <div className="feature-section">
-          <label className="feature-label">
-            {t('advancedFeatures.customDomain')}
-            <input
-              type="text"
-              value={customDomain}
-              onChange={(e) => {
-                setCustomDomain(e.target.value);
-                onChange({
-                  ...features,
-                  customDomain: e.target.value
-                });
-              }}
-              placeholder="custom.example.com"
-            />
-          </label>
         </div>
       </div>
     </div>

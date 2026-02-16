@@ -8,6 +8,7 @@
 .tabs-header {
   display: flex;
   align-items: center;
+  justify-content: center;  /* ← added to center the tabs */
   gap: 0.5rem;
   background: transparent;
   padding: 0.25rem;
