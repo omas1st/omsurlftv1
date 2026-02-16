@@ -1,38 +1,520 @@
-.App {
-  text-align: center;
+/* src/App.css */
+
+/* ============ BASE STYLES ============ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  --accent-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #0ba360 0%, #3cba92 100%);
+  --dark-bg: #1a202c;
+  --light-bg: #f7fafc;
+  --card-bg: #ffffff;
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-light: #718096;
+  --text-white: #ffffff;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Container */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  width: 100%;
+}
+
+/* ============ LOADING STATES ============ */
+.loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  min-height: 100vh;
+  gap: 1.5rem;
 }
 
-.App-link {
-  color: #61dafb;
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-color);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-@keyframes App-logo-spin {
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 1.125rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ============ COMMON MODALS ============ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--card-bg);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-2xl);
+  border: 1px solid var(--border-color);
+  animation: modalSlideUp 0.3s ease;
+}
+
+@keyframes modalSlideUp {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(20px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+.modal.large-modal {
+  max-width: 800px;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--light-bg);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.modal-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-light);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--light-bg);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: var(--light-bg);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+/* ============ UTILITY CLASSES ============ */
+.text-gradient {
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+}
+
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: var(--secondary-gradient);
+  color: white;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4);
+}
+
+/* ============ RESPONSIVE DESIGN ============ */
+/* Tablet and Mobile */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+/* Print */
+@media print {
+  .header,
+  .footer,
+  .help-btn,
+  .action-buttons,
+  .copy-btn {
+    display: none !important;
+  }
+}
+
+/* ===========================
+   Fullscreen mobile modals
+   =========================== */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-start;
+    padding: 0;
+    overflow-y: auto;
+  }
+  
+  .modal {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  /* For popups that should be fullscreen on mobile */
+  .fullscreen-modal-mobile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--card-bg);
+    z-index: 10000;
+    overflow-y: auto;
+  }
+  
+  /* Prevent body scroll when modal is open */
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Utility class for fullscreen modals on mobile */
+.mobile-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card-bg);
+  z-index: 10000;
+  overflow-y: auto;
+}
+
+/* Prevent scrolling on body when modal is open */
+body.no-scroll {
+  overflow: hidden;
+}
+
+/* ===========================
+   MOBILE SCALING (like 80% zoom)
+   Applies to screens ≤ 640px
+   =========================== */
+@media (max-width: 640px) {
+  /* Scale down the base font size */
+  html {
+    font-size: 85%; /* 16px * 0.85 ≈ 13.6px – feels like 85% zoom */
+  }
+
+  /* Prevent horizontal scroll */
+  body,
+  .App,
+  .main-content,
+  .container {
+    overflow-x: hidden;
+  }
+
+  /* ===== HomePage adjustments ===== */
+  .homepage .hero-content h1 {
+    font-size: 2rem; /* was 2.5rem */
+  }
+  .homepage .subtitle {
+    font-size: 0.9rem; /* was 1.125rem */
+  }
+  .homepage .feature-card h3 {
+    font-size: 1rem; /* was 1.25rem */
+  }
+  .homepage .feature-card p {
+    font-size: 0.85rem; /* was 1rem */
+  }
+  .homepage .hero-section {
+    padding: 3rem 0.75rem; /* was 4rem 1rem */
+  }
+  .homepage .main-section {
+    padding: 1.5rem 0.75rem; /* was 2rem 1rem */
+  }
+  .homepage .features-section {
+    padding: 2rem 0.75rem; /* was 3rem 1rem */
+  }
+
+  /* ===== URLShortener adjustments ===== */
+  .url-shortener {
+    padding: 1rem; /* was 1.5rem */
+  }
+  .shortener-form {
+    padding: 1.5rem; /* was 2rem */
+  }
+  .form-title {
+    font-size: 1.4rem; /* was 1.75rem */
+  }
+  .mode-btn {
+    padding: 0.7rem 0.5rem; /* was 0.875rem 1rem */
+    font-size: 0.8rem; /* was 1rem */
+    min-height: 38px; /* was 44px */
+  }
+  .url-input,
+  .alias-input {
+    padding: 0.8rem 2rem 0.8rem 0.8rem; /* was 1rem 2.5rem 1rem 1rem */
+    font-size: 0.85rem; /* was 1rem */
+    min-height: 42px; /* was 48px */
+  }
+  .input-icon {
+    font-size: 0.9rem; /* was 1rem */
+  }
+  .preview-url {
+    padding: 0.6rem; /* was 0.75rem */
+    font-size: 0.8rem; /* was 0.9rem */
+  }
+  .section-toggle-btn {
+    padding: 0.8rem 1rem; /* was 1rem 1.25rem */
+    font-size: 0.85rem; /* was 1rem */
+    min-height: 42px; /* was 48px */
+  }
+  .generate-btn {
+    padding: 0.8rem 1.5rem; /* was 1rem 2rem */
+    font-size: 0.9rem; /* was 1.1rem */
+    min-height: 44px; /* was 52px */
+  }
+  .login-prompt-message {
+    font-size: 0.9rem; /* was 1.1rem */
+  }
+  .login-prompt-features li {
+    padding: 0.6rem 0.8rem; /* was 0.75rem 1rem */
+    font-size: 0.8rem; /* was 0.95rem */
+  }
+  .login-prompt-btn {
+    padding: 0.7rem 1.5rem; /* was 0.875rem 2rem */
+    font-size: 0.85rem; /* was 1rem */
+    min-height: 40px; /* was 48px */
+  }
+
+  /* ===== BulkUpload adjustments ===== */
+  .bulk-upload {
+    padding: 15px; /* was 20px */
+  }
+  .upload-area {
+    padding: 30px 10px; /* was 40px 15px */
+  }
+  .upload-icon {
+    font-size: 28px; /* was 36px */
+  }
+  .browse-btn,
+  .sample-btn,
+  .generate-btn {
+    padding: 6px 10px; /* was 6px 12px */
+    font-size: 0.8rem; /* was 0.9em */
+  }
+  .file-selected span {
+    font-size: 0.85rem; /* was 0.95em */
+  }
+  .file-selected button {
+    padding: 3px 8px; /* was 4px 10px */
+    font-size: 0.75rem; /* was 0.85em */
+  }
+  .errors-container,
+  .results-container {
+    padding: 12px; /* was 15px */
+  }
+  .results-header h4 {
+    font-size: 0.9rem; /* was 1em */
+  }
+  .table-header {
+    padding: 8px; /* was 10px */
+    font-size: 0.8rem; /* was 0.9em */
+    gap: 5px; /* was 10px */
+  }
+  .result-item {
+    padding: 8px; /* was 10px */
+    font-size: 0.8rem; /* was 0.9em */
+    gap: 5px; /* was 10px */
+  }
+  .col-alias code {
+    font-size: 0.75rem; /* was 0.85em */
+    padding: 2px 4px; /* was 3px 6px */
+  }
+  .copy-btn-small,
+  .open-btn {
+    width: 26px; /* was 30px */
+    height: 26px; /* was 30px */
+    font-size: 12px; /* was 14px */
+  }
+  .download-csv-btn {
+    padding: 4px 8px; /* was 6px 12px */
+    font-size: 0.75rem; /* was 0.85em */
+  }
+
+  /* ===== Global index.css / App adjustments ===== */
+  .main-content {
+    padding: 10px; /* was 20px */
+  }
+  .btn {
+    padding: 8px 16px; /* was 10px 20px */
+    font-size: 12px; /* was 14px */
+    height: 32px; /* was 36px */
+  }
+  .card {
+    padding: 15px; /* was 20px */
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 8px 12px; /* was 10px 15px */
+    font-size: 12px; /* was 14px */
+  }
+  .form-group label {
+    font-size: 12px; /* was 14px */
+  }
+  .modal {
+    max-width: 95%; /* allow modal to be slightly narrower */
+  }
+  .modal-header h3 {
+    font-size: 1.1rem; /* was 1.25rem */
+  }
+}
+
+/* ===========================
+   Optional: Remove aggressive scaling
+   (commented out to avoid conflicts)
+   =========================== */
+/* 
+@media (max-width: 420px) {
+  .app-scale-root {
+    transform: scale(0.5);
+    transform-origin: 0 0;
+    width: 200%;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+
+  html, body, #root {
+    height: 100%;
+    min-height: 100%;
+  }
+
+  .help-form-container {
+    bottom: 60px;
+    right: 8px;
+  }
+}
+*/
