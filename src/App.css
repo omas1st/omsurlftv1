@@ -308,12 +308,10 @@ body.no-scroll {
   }
 }
 
-/* App.css – add at the end */
-
-/* Mobile scaling: preserve desktop layout but shrink everything */
+/* ============ MOBILE SCALING (≤480px) ============ */
 @media (max-width: 480px) {
   html {
-    font-size: 80%; /* 16px → 12.8px – feels like 80% zoom */
+    font-size: 80%; /* 16px → 12.8px – like 80% zoom */
   }
 
   body,
@@ -323,7 +321,10 @@ body.no-scroll {
     overflow-x: hidden;
   }
 
-  /* Global element adjustments */
+  .container {
+    padding: 0 8px; /* was 24px on desktop */
+  }
+
   .btn {
     padding: 0.4rem 0.8rem;
     font-size: 0.8rem;

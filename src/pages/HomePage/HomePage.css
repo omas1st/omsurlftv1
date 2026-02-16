@@ -130,148 +130,56 @@
   }
 }
 
-/* ===== MOBILE‑FIRST RESPONSIVE ADDITIONS ===== */
-/* Small phones (up to 480px) */
+/* ===== MOBILE SCALING (≤480px) ===== */
 @media (max-width: 480px) {
+  .homepage {
+    padding: 0;
+  }
+
   .hero-section {
-    padding: 3rem 0.75rem 1.5rem;
+    padding: 16px 8px 8px;
   }
 
   .hero-content h1 {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
+    font-size: 1.8rem;
+    margin-bottom: 4px;
   }
 
   .subtitle {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .main-section {
-    padding: 1.5rem 0.75rem;
-  }
-
-  .features-section {
-    padding: 2rem 0.75rem;
-    gap: 1.5rem;
-  }
-
-  .features-grid {
-    gap: 1.5rem;
-  }
-
-  .feature-card {
-    padding: 1.5rem 0.75rem;
-  }
-
-  .feature-icon {
-    font-size: 1.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  .feature-card h3 {
-    font-size: 1.125rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .feature-card p {
-    font-size: 0.9rem;
-  }
-}
-
-/* Extra small devices (up to 360px) */
-@media (max-width: 360px) {
-  .hero-section {
-    padding: 2.5rem 0.5rem 1rem;
-  }
-
-  .hero-content h1 {
-    font-size: 1.75rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
-  }
-
-  .main-section {
-    padding: 1rem 0.5rem;
-  }
-
-  .features-section {
-    padding: 1.5rem 0.5rem;
-  }
-
-  .features-grid {
-    gap: 1rem;
-  }
-
-  .feature-card {
-    padding: 1rem 0.5rem;
-  }
-
-  .feature-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .feature-card h3 {
-    font-size: 1rem;
-  }
-
-  .feature-card p {
-    font-size: 0.85rem;
-  }
-}
-
-/* HomePage.css – add at the end */
-
-/* Mobile scaling: keep desktop layout, shrink elements */
-@media (max-width: 480px) {
-  .hero-section {
-    padding: 2rem 0.5rem 1rem;
-  }
-
-  .hero-content h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .subtitle {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     max-width: 100%;
   }
 
   .main-section {
-    padding: 1rem 0.5rem;
+    padding: 8px 8px;
   }
 
   .features-section {
-    padding: 1.5rem 0.5rem;
+    padding: 12px 8px;
     max-width: 100%;
   }
 
-  /* Keep 4 columns on mobile */
   .features-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
+    gap: 4px;
   }
 
   .feature-card {
-    padding: 0.75rem 0.25rem;
+    padding: 6px 2px;
   }
 
   .feature-icon {
-    font-size: 1.2rem;
-    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    margin-bottom: 2px;
   }
 
   .feature-card h3 {
-    font-size: 0.8rem;
-    margin-bottom: 0.25rem;
+    font-size: 0.7rem;
+    margin-bottom: 2px;
   }
 
   .feature-card p {
-    font-size: 0.65rem;
-    line-height: 1.3;
+    font-size: 0.55rem;
+    line-height: 1.2;
   }
 }

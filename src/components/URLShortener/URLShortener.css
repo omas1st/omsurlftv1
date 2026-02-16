@@ -419,7 +419,7 @@
   }
 }
 
-/* ===== MOBILE‑FIRST RESPONSIVE ===== */
+/* ===== RESPONSIVE (desktop-first) ===== */
 @media (max-width: 640px) {
   .url-shortener {
     padding: 1rem;
@@ -582,122 +582,155 @@
   outline-offset: 2px;
 }
 
-/* URLShortener.css – add at the end */
-
-/* Mobile scaling: keep desktop layout, shrink elements */
+/* ===== MOBILE SCALING (≤480px) – additional tightening ===== */
 @media (max-width: 480px) {
   .url-shortener {
-    padding: 0.5rem;
+    padding: 4px;
   }
 
-  .shortener-form {
-    padding: 1rem;
-  }
-
-  .form-title {
-    font-size: 1.3rem;
-  }
-
-  .title-icon {
-    font-size: 1.2rem;
+  .mode-selector {
+    margin-bottom: 8px;
   }
 
   .mode-toggle {
-    flex-direction: row; /* keep horizontal */
+    padding: 2px;
+    gap: 2px;
   }
 
   .mode-btn {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.8rem;
-    min-height: 36px;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+    min-height: 32px;
+    gap: 4px;
   }
 
   .mode-icon {
+    font-size: 0.9rem;
+  }
+
+  .shortener-form {
+    padding: 12px;
+  }
+
+  .form-header {
+    margin-bottom: 12px;
+  }
+
+  .form-title {
+    font-size: 1.2rem;
+    gap: 4px;
+  }
+
+  .title-icon {
     font-size: 1rem;
   }
 
+  .form-group {
+    margin-bottom: 12px;
+  }
+
   .form-label {
-    font-size: 0.8rem;
-    gap: 0.25rem;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    gap: 4px;
   }
 
   .label-icon {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .url-input,
   .alias-input {
-    padding: 0.6rem 2rem 0.6rem 0.6rem;
-    font-size: 0.8rem;
-    min-height: 38px;
+    padding: 6px 28px 6px 8px;
+    font-size: 0.75rem;
+    min-height: 34px;
   }
 
   .input-icon {
-    right: 0.6rem;
-    font-size: 0.8rem;
+    right: 8px;
+    font-size: 0.75rem;
   }
 
   .preview-url {
-    padding: 0.5rem;
-    font-size: 0.7rem;
-    gap: 0.25rem;
+    margin-top: 6px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    gap: 4px;
+  }
+
+  .advanced-section {
+    margin: 12px 0;
   }
 
   .section-toggle-btn {
-    padding: 0.6rem 0.8rem;
-    font-size: 0.8rem;
-    min-height: 38px;
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    min-height: 36px;
   }
 
   .toggle-icon {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    margin-right: 4px;
   }
 
   .toggle-arrow {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
   }
 
   .advanced-content {
-    padding: 1rem;
+    margin-top: 8px;
+    padding: 12px;
+  }
+
+  .login-prompt {
+    padding: 8px;
   }
 
   .login-prompt-message {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
   }
 
   .login-prompt-features {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 6px;
+    margin: 12px 0;
   }
 
   .login-prompt-features li {
-    padding: 0.5rem;
-    font-size: 0.75rem;
+    padding: 6px 8px;
+    font-size: 0.7rem;
   }
 
   .login-prompt-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.8rem;
-    min-height: 38px;
+    padding: 8px 16px;
+    font-size: 0.75rem;
+    min-height: 36px;
   }
 
   .error-message {
-    padding: 0.6rem;
-    font-size: 0.75rem;
-    gap: 0.5rem;
+    padding: 8px;
+    font-size: 0.7rem;
+    gap: 6px;
+    margin: 12px 0;
   }
 
   .error-icon {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .form-actions {
+    margin-top: 12px;
   }
 
   .generate-btn {
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    min-height: 42px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    min-height: 40px;
+    gap: 6px;
   }
 
   .btn-icon {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }

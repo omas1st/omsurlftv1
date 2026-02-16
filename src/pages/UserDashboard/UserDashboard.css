@@ -462,109 +462,38 @@ body {
   color: var(--text-muted);
 }
 
-/* ===== MOBILE‑FIRST RESPONSIVE ADJUSTMENTS ===== */
-@media (max-width: 360px) {
-  .user-dashboard {
-    padding: var(--spacing-xs);
-    gap: var(--spacing-md);
-  }
-
-  .section-title {
-    font-size: 1.125rem;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .welcome-section h1 {
-    font-size: 1.25rem;
-  }
-
-  .info-card {
-    min-width: 140px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-  }
-
-  .info-card .card-icon {
-    font-size: 1.25rem;
-  }
-
-  .info-card .balance,
-  .info-card .tier {
-    font-size: var(--font-size-sm);
-  }
-
-  .stat-icon {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1.25rem;
-  }
-
-  .stat-value {
-    font-size: var(--font-size-sm);
-  }
-
-  .action-card {
-    padding: var(--spacing-sm) var(--spacing-xs);
-  }
-
-  .action-icon {
-    font-size: 1.5rem;
-  }
-
-  .action-card h3 {
-    font-size: var(--font-size-xs);
-  }
-
-  .action-card p {
-    font-size: 0.7rem;
-  }
-
-  .table-header,
-  .table-row {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.7rem;
-  }
-
-  .action-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .actions-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* UserDashboard.css – add at the end */
-
-/* Mobile scaling: keep desktop layout, shrink elements */
+/* ===== MOBILE SCALING (≤480px) ===== */
 @media (max-width: 480px) {
   .user-dashboard {
-    padding: 0.5rem;
-    gap: 1rem;
+    padding: 4px;
+    gap: 8px;
   }
 
   .section-title {
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 4px;
   }
 
   .welcome-section h1 {
     font-size: 1.2rem;
+    margin-bottom: 2px;
   }
 
   .welcome-message {
     font-size: 0.7rem;
   }
 
+  .dashboard-header {
+    gap: 8px;
+  }
+
+  .user-info-cards {
+    gap: 4px;
+  }
+
   .info-card {
-    min-width: 120px;
-    padding: 0.25rem 0.5rem;
+    min-width: 110px;
+    padding: 2px 6px;
   }
 
   .info-card .card-icon {
@@ -580,20 +509,20 @@ body {
     font-size: 0.7rem;
   }
 
-  /* Keep stats grid as 4 columns, just shrink */
   .stats-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.25rem;
+    gap: 4px;
+    margin-bottom: 8px;
   }
 
   .stat-card {
-    padding: 0.25rem;
+    padding: 4px;
   }
 
   .stat-icon {
-    width: 2rem;
-    height: 2rem;
-    font-size: 1.2rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1rem;
   }
 
   .stat-info h3 {
@@ -605,22 +534,22 @@ body {
   }
 
   .stats-chart-container {
-    padding: 0.5rem;
+    padding: 8px;
+    margin-top: 8px;
   }
 
-  /* Keep quick actions as 4 columns */
   .actions-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.25rem;
+    gap: 4px;
   }
 
   .action-card {
-    padding: 0.5rem 0.25rem;
+    padding: 4px 2px;
   }
 
   .action-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.4rem;
+    margin-bottom: 2px;
   }
 
   .action-card h3 {
@@ -631,14 +560,21 @@ body {
     font-size: 0.5rem;
   }
 
-  /* Recent URLs table – reduce font and padding */
+  .recent-urls-section {
+    margin-top: 8px;
+  }
+
+  .section-header {
+    margin-bottom: 4px;
+  }
+
   .urls-table {
     font-size: 0.6rem;
   }
 
   .table-header,
   .table-row {
-    padding: 0.25rem 0.5rem;
+    padding: 4px 6px;
     font-size: 0.6rem;
   }
 
@@ -649,14 +585,25 @@ body {
   }
 
   .no-urls {
-    padding: 1rem;
+    padding: 12px;
   }
 
   .no-urls p:first-child {
     font-size: 0.7rem;
+    margin-bottom: 2px;
   }
 
   .no-urls p:last-child {
     font-size: 0.6rem;
+  }
+
+  .tabs {
+    gap: 2px;
+    padding-bottom: 4px;
+  }
+
+  .tab {
+    padding: 2px 6px;
+    font-size: 0.7rem;
   }
 }
