@@ -1,6 +1,6 @@
 /* src/components/URLShortener/URLShortener.css
-   Updated: force desktop appearance on small screens but reduce sizes,
-   remove side gaps for .url-shortener and form containers.
+   Updated: make the "Generate Short URL" label and the "Advanced Settings" label smaller on small screens.
+   Preserves inner spacing so content isn't flush against container edges.
 */
 
 :root {
@@ -22,20 +22,27 @@
   --url-radius-md: 8px;
   --url-radius-lg: 12px;
   --url-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  /* spacing tokens for consistent inner gaps */
+  --inner-gap-desktop: 16px;
+  --inner-gap-tablet: 12px;
+  --inner-gap-mobile: 8px;
 }
 
-/* Main wrapper - make full width and remove side padding on narrow screens */
+/* Main wrapper - full width, keep an inner padding so contents don't touch edges */
 .url-shortener {
   max-width: 600px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.5rem; /* desktop inner spacing */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   width: 100%;
   box-sizing: border-box;
+  background: transparent;
 }
 
 /* Mode selector */
-.mode-selector { margin-bottom: 2rem; }
+.mode-selector {
+  margin-bottom: 2rem;
+}
 
 .mode-toggle {
   display: flex;
@@ -76,13 +83,19 @@
 .shortener-form {
   background: white;
   border-radius: var(--url-radius-lg);
-  padding: 2rem;
+  padding: 2rem; /* inner spacing for the form */
   box-shadow: var(--url-shadow-md);
   border: 1px solid var(--url-border);
   width: 100%;
   box-sizing: border-box;
 }
 
+/* add small inner spacing so nested content doesn't touch edges */
+.shortener-form .form-group:first-child { margin-top: 0; }
+/* slightly increased horizontal padding for form groups so controls have breathing room */
+.shortener-form .form-group { padding-left: var(--inner-gap-desktop); padding-right: var(--inner-gap-desktop); box-sizing: border-box; }
+
+/* Header/title */
 .form-header { text-align: center; margin-bottom: 2rem; }
 
 .form-title {
@@ -144,7 +157,7 @@
   pointer-events: none;
 }
 
-/* Preview, advanced section, login prompt, errors and actions remain visually the same */
+/* Preview URL */
 .preview-url {
   display: flex;
   align-items: center;
@@ -165,8 +178,15 @@
 }
 
 /* Advanced and login UI */
-.advanced-section { margin: 2rem 0; }
+/* Provide extra horizontal padding around the advanced area so the toggle won't be flush */
+.advanced-section {
+  margin: 2rem 0;
+  padding-left: var(--inner-gap-desktop);
+  padding-right: var(--inner-gap-desktop);
+  box-sizing: border-box;
+}
 
+/* --- TARGET: Advanced Settings toggle --- */
 .section-toggle-btn {
   width: 100%;
   display: flex;
@@ -182,6 +202,22 @@
   cursor: pointer;
   transition: var(--url-transition);
   min-height: 48px;
+  box-sizing: border-box;
+}
+
+/* smaller pieces inside toggle */
+.section-toggle-btn .toggle-icon { font-size: 1rem; margin-right: 0.5rem; }
+.section-toggle-btn .login-indicator { font-size: 0.9rem; color: var(--url-warning); }
+.section-toggle-btn .toggle-arrow { font-size: 0.95rem; color: var(--url-gray); }
+
+/* Ensure toggle content doesn't overflow; text ellipsis if needed */
+.section-toggle-btn span {
+  display: inline-block;
+  max-width: 72%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 /* Error message and actions */
@@ -200,8 +236,15 @@
   animation: slideIn 0.3s ease;
 }
 
-.form-actions { margin-top: 2rem; }
+/* ensure actions area also respects inner spacing */
+.form-actions {
+  margin-top: 2rem;
+  padding-left: var(--inner-gap-desktop);
+  padding-right: var(--inner-gap-desktop);
+  box-sizing: border-box;
+}
 
+/* --- TARGET: Generate Button --- */
 .generate-btn {
   width: 100%;
   display: flex;
@@ -219,20 +262,33 @@
   transition: var(--url-transition);
   box-shadow: 0 4px 6px rgba(58, 134, 255, 0.2);
   min-height: 52px;
+  box-sizing: border-box;
+}
+
+.generate-btn .btn-icon { font-size: 1.25rem; }
+
+/* Hide any long label overflow nicely by default */
+.generate-btn span {
+  display: inline-block;
+  max-width: calc(100% - 40px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* Animations */
 @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); max-height: 0; }
-  to { opacity: 1; transform: translateY(0); max-height: 1000px; }
-}
+@keyframes slideDown { from { opacity: 0; transform: translateY(-10px); max-height: 0; } to { opacity: 1; transform: translateY(0); max-height: 1000px; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ===== RESPONSIVE RULES (desktop-first) ===== */
 
 /* Small desktop -> tablet */
 @media (max-width: 640px) {
+  :root {
+    --inner-gap-desktop: var(--inner-gap-tablet);
+  }
+
   .url-shortener { padding: 1rem; max-width: 520px; }
   .shortener-form { padding: 1.5rem; }
   .form-title { font-size: 1.5rem; }
@@ -241,16 +297,20 @@
   .generate-btn { font-size: 1rem; padding: 0.875rem 1.5rem; min-height: 48px;}
 }
 
-/* ===== NARROW SCREENS: keep layout (no stacking) but reduce sizes and remove side gaps ===== */
+/* ===== NARROW SCREENS: keep layout (no stacking) but reduce sizes and keep small inner spacing ===== */
 @media (max-width: 480px) {
-  /* make block fill viewport and remove side gaps */
+  :root {
+    --inner-gap-desktop: var(--inner-gap-mobile);
+  }
+
+  /* make block fill viewport, remove outer margin but keep inner padding so content isn't flush */
   .url-shortener {
     max-width: 100vw !important;
     width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding: 10px 12px !important; /* small inner spacing on mobile */
     margin-left: 0 !important;
     margin-right: 0 !important;
+    box-sizing: border-box;
   }
 
   .shortener-form {
@@ -258,9 +318,9 @@
     border-radius: 6px;
   }
 
-  /* reduce base and element font sizes (explicit — no page zoom) */
+  /* reduce base and element font sizes explicitly */
   .form-title { font-size: 1.2rem; }
-  .form-label { font-size: 0.9rem; }
+  .form-label { font-size: 0.95rem; }
   .url-input, .alias-input {
     padding: 6px 28px 6px 8px;
     font-size: 0.85rem;
@@ -271,18 +331,64 @@
   .mode-btn { padding: 6px 8px; font-size: 0.8rem; min-height: 34px; }
 
   .preview-url { padding: 6px 8px; font-size: 0.75rem; }
-  .section-toggle-btn { padding: 8px 10px; font-size: 0.85rem; min-height: 36px; }
+
+  /* Advanced area spacing reduced but preserved so toggle isn't flush */
+  .advanced-section {
+    padding-left: var(--inner-gap-desktop);
+    padding-right: var(--inner-gap-desktop);
+    margin: 16px 0;
+  }
+
+  /* --- Make Advanced Settings toggle smaller/professional on small screens --- */
+  .section-toggle-btn {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    min-height: 36px;
+    border-radius: 6px;
+    gap: 6px;
+  }
+  .section-toggle-btn .toggle-icon { font-size: 0.85rem; }
+  .section-toggle-btn .login-indicator { font-size: 0.72rem; }
+  .section-toggle-btn .toggle-arrow { font-size: 0.72rem; }
+
+  /* Specifically target the label text inside the toggle (exclude icon/login/arrow) and make it smaller */
+  .section-toggle-btn span:not(.toggle-icon):not(.login-indicator):not(.toggle-arrow) {
+    font-size: 0.78rem;
+    line-height: 1;
+    max-width: 68%;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
   .advanced-content { padding: 10px; }
   .login-prompt-message { font-size: 0.9rem; }
   .login-prompt-features li { font-size: 0.75rem; padding: 6px 8px; }
 
+  /* --- Make Generate button smaller on mobile (compact but still tappable) --- */
   .generate-btn {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 8px 12px;
+    font-size: 0.92rem; /* overall button font-size */
     min-height: 40px;
+    border-radius: 8px;
+  }
+  .generate-btn .btn-icon { font-size: 1rem; }
+
+  /* specifically target the label text (exclude icon) to be smaller and more compact */
+  .generate-btn span:not(.btn-icon) {
+    font-size: 0.82rem;
+    line-height: 1;
+    display: inline-block;
+    max-width: calc(100% - 36px);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: middle;
   }
 
-  .btn-icon { font-size: 0.9rem; }
+  .btn-icon { font-size: 0.95rem; }
 
   /* Prevent mobile auto-zoom on inputs */
   input, textarea, select { font-size: 13px; -webkit-text-size-adjust: none; }
@@ -292,5 +398,27 @@
 @media (max-width: 360px) {
   .form-title { font-size: 1.05rem; }
   .url-input, .alias-input { font-size: 0.8rem; padding: 6px 24px 6px 8px; min-height: 32px; }
-  .generate-btn { font-size: 0.85rem; padding: 8px 12px; min-height: 38px; }
+  .generate-btn { font-size: 0.85rem; padding: 7px 10px; min-height: 36px; }
+  .generate-btn .btn-icon { font-size: 0.9rem; }
+
+  /* Advanced toggle even smaller but keep spacing */
+  .section-toggle-btn {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+    min-height: 34px;
+  }
+  .section-toggle-btn .toggle-icon { font-size: 0.8rem; }
+  .section-toggle-btn .login-indicator { font-size: 0.68rem; }
+  .section-toggle-btn .toggle-arrow { font-size: 0.68rem; }
+
+  /* tiny: reduce the toggle label and button label further */
+  .section-toggle-btn span:not(.toggle-icon):not(.login-indicator):not(.toggle-arrow) {
+    font-size: 0.72rem;
+    max-width: 66%;
+  }
+
+  .generate-btn span:not(.btn-icon) {
+    font-size: 0.75rem;
+    max-width: calc(100% - 32px);
+  }
 }
