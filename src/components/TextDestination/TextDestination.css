@@ -1,0 +1,84 @@
+/* TextDestination.css - Add this */
+.public-notice {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  color: #856404;
+}
+
+.public-notice small {
+  font-size: 12px;
+  display: block;
+  line-height: 1.4;
+}
+
+.word-count {
+  font-size: 12px;
+  color: #666;
+  margin-left: 5px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 34px;
+  margin-left: 10px;
+  transition: .4s;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+
+input[type="checkbox"]:checked + .toggle-slider {
+  background-color: #2196F3;
+}
+
+input[type="checkbox"]:checked + .toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.toggle-description {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+  font-size: 12px;
+}
+
+.customize-btn {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  width: 100%;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.customize-btn:hover {
+  background-color: #f5f5f5;
+}

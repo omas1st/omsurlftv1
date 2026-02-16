@@ -1,0 +1,444 @@
+/* src/components/AdvancedFeatures/MultipleDestination.css */
+
+.feature-multiple-destination {
+  margin: 1.5rem 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Checkbox styling (consistent with LinkExpiration) */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: #fff;
+  border: 2px solid #d0d0d0;
+  border-radius: 4px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
+  background: #667eea;
+  border-color: #667eea;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label input[type="checkbox"]:focus + .checkbox-custom {
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+.checkbox-text {
+  color: #555;
+  font-weight: 500;
+}
+
+/* Rules container */
+.rules-container {
+  margin-top: 1.5rem;
+  padding-left: 1.75rem;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Rule card */
+.rule-card {
+  background-color: #f8fafc;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.rule-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rule-card.rule-invalid {
+  background-color: #fff5f5;
+}
+
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.rule-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.rule-number {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.validation-warning {
+  font-size: 0.8rem;
+  color: #ed8936;
+  background-color: #feebc8;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.remove-rule-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #888;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  transition: color 0.2s;
+}
+
+.remove-rule-btn:hover {
+  color: #e53e3e;
+}
+
+/* Destination field */
+.rule-destination {
+  margin-bottom: 1.25rem;
+}
+
+.feature-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 0.25rem;
+}
+
+.destination-input-wrapper {
+  position: relative;
+}
+
+.rule-destination input[type="url"] {
+  display: block;
+  width: 100%;
+  padding: 0.7rem 0.75rem;
+  margin-top: 0.25rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-color: #fff;
+}
+
+.rule-destination input[type="url"]:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.rule-destination input[type="url"].error {
+  border-color: #e53e3e;
+  background-color: #fff5f5;
+}
+
+.rule-destination input[type="url"].error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.field-error {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  color: #e53e3e;
+  background: #fff5f5;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Conditions section */
+.rule-conditions {
+  margin-bottom: 1rem;
+}
+
+.rule-conditions .feature-label {
+  margin-bottom: 0.75rem;
+}
+
+.condition-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+  background: #fff;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.condition-row select,
+.condition-row .value-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.condition-row select {
+  padding: 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 0.9rem;
+  color: #333;
+  transition: border-color 0.2s;
+}
+
+.condition-row select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.condition-row select:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+.field-select {
+  max-width: 140px;
+}
+
+.operator-select {
+  max-width: 120px;
+}
+
+.value-input {
+  flex: 2;
+}
+
+.value-input input[type="text"],
+.value-input select,
+.value-input .multi-select-input select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+  background-color: #fff;
+}
+
+.value-input input[type="text"]:focus,
+.value-input select:focus,
+.value-input .multi-select-input select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.multi-select-input select {
+  height: auto;
+  min-height: 100px;
+}
+
+.multi-select-input .field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.time-input-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.time-input-group select {
+  flex: 1;
+  min-width: 120px;
+}
+
+.time-input-group input {
+  flex: 2;
+  min-width: 140px;
+  padding: 0.6rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.remove-condition-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #888;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  transition: color 0.2s;
+  align-self: center;
+}
+
+.remove-condition-btn:hover {
+  color: #e53e3e;
+}
+
+/* Add condition button */
+.add-condition-btn {
+  background: none;
+  border: 1px dashed #667eea;
+  color: #667eea;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.add-condition-btn:hover {
+  background-color: rgba(102, 126, 234, 0.05);
+  border-color: #5a67d8;
+}
+
+/* Rule preview */
+.rule-preview {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background-color: #e6f7ff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #2c3e50;
+  line-height: 1.5;
+}
+
+.condition-tag {
+  display: inline-block;
+  background-color: #fff;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  margin: 0 0.1rem;
+  border: 1px solid #b3e0ff;
+}
+
+.destination-preview {
+  font-weight: 500;
+  color: #0056b3;
+  word-break: break-all;
+}
+
+/* Rules actions (add rule button) */
+.rules-actions {
+  margin-top: 1.5rem;
+}
+
+.add-rule-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-rule-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+/* Feature note */
+.feature-note {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1rem;
+  background-color: #f0f4f8;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #2d3748;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.note-icon {
+  font-size: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .rules-container {
+    padding-left: 0;
+  }
+
+  .condition-row {
+    flex-wrap: wrap;
+  }
+
+  .condition-row select,
+  .condition-row .value-input {
+    flex: 1 1 100%;
+  }
+
+  .field-select,
+  .operator-select {
+    max-width: none;
+  }
+
+  .time-input-group {
+    flex-direction: column;
+  }
+
+  .rule-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .rule-preview {
+    font-size: 0.8rem;
+  }
+}

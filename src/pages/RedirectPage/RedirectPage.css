@@ -1,0 +1,603 @@
+/* src/components/RedirectPage/RedirectPage.css */
+
+:root {
+  --redirect-primary: #3a86ff;
+  --redirect-primary-dark: #2a76ef;
+  --redirect-secondary: #8338ec;
+  --redirect-success: #06d6a0;
+  --redirect-danger: #ef476f;
+  --redirect-warning: #ffd166;
+  --redirect-info: #118ab2;
+  --redirect-dark: #1a1a2e;
+  --redirect-light: #f8f9fa;
+  --redirect-gray: #6c757d;
+  --redirect-gray-light: #e9ecef;
+  --redirect-border: #dee2e6;
+  --redirect-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --redirect-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --redirect-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --redirect-radius-sm: 6px;
+  --redirect-radius-md: 8px;
+  --redirect-radius-lg: 12px;
+  --redirect-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.redirect-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+/* Common Loading State */
+.redirect-loading {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 2rem;
+  border: 4px solid var(--redirect-gray-light);
+  border-top-color: var(--redirect-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.redirect-loading p {
+  font-size: 1.125rem;
+  color: var(--redirect-dark);
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+/* Common Error State */
+.redirect-error {
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  background: white;
+  border-radius: var(--redirect-radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--redirect-shadow-md);
+  border: 1px solid var(--redirect-border);
+  animation: slideUp 0.3s ease;
+}
+
+.redirect-error h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--redirect-dark);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.redirect-error p {
+  font-size: 1rem;
+  color: var(--redirect-gray);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+/* Password Redirect */
+.password-redirect {
+  max-width: 500px;
+  width: 100%;
+}
+
+.password-form-container {
+  background: white;
+  border-radius: var(--redirect-radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--redirect-shadow-md);
+  border: 1px solid var(--redirect-border);
+  animation: slideUp 0.3s ease;
+}
+
+.password-form-container h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--redirect-dark);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.password-note {
+  background: rgba(58, 134, 255, 0.05);
+  border-radius: var(--redirect-radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  /* Removed the colored vertical line */
+}
+
+.password-note p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--redirect-dark);
+  line-height: 1.5;
+}
+
+.password-form {
+  margin-bottom: 2rem;
+}
+
+.password-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.password-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--redirect-dark);
+  font-size: 0.95rem;
+}
+
+.password-form input[type="password"] {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--redirect-border);
+  border-radius: var(--redirect-radius-md);
+  font-size: 1rem;
+  font-family: inherit;
+  transition: var(--redirect-transition);
+  background: white;
+}
+
+.password-form input[type="password"]:focus {
+  outline: none;
+  border-color: var(--redirect-primary);
+  box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.1);
+}
+
+.password-form input[type="password"].error {
+  border-color: var(--redirect-danger);
+}
+
+.error-text {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--redirect-danger);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--redirect-primary), var(--redirect-secondary));
+  color: white;
+  border: none;
+  border-radius: var(--redirect-radius-md);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--redirect-transition);
+  box-shadow: 0 4px 6px rgba(58, 134, 255, 0.2);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(58, 134, 255, 0.25);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.password-footer {
+  border-top: 1px solid var(--redirect-border);
+  padding-top: 1.5rem;
+  text-align: center;
+}
+
+.password-footer p {
+  margin: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--redirect-gray);
+  line-height: 1.5;
+}
+
+.password-footer a {
+  color: var(--redirect-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--redirect-transition);
+}
+
+.password-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Redirect Message Container */
+.redirect-message {
+  max-width: 500px;
+  width: 100%;
+  background: white;
+  border-radius: var(--redirect-radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--redirect-shadow-md);
+  border: 1px solid var(--redirect-border);
+  animation: slideUp 0.3s ease;
+  text-align: center;
+}
+
+.redirect-message h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+
+
+.message-content {
+  margin-bottom: 2rem;
+}
+
+.message-content p {
+  font-size: 1rem;
+  color: var(--redirect-gray);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.contact-info {
+  font-size: 0.95rem !important;
+  color: var(--redirect-dark) !important;
+  font-weight: 500;
+}
+
+.destination-link {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--redirect-light);
+  border-radius: var(--redirect-radius-md);
+  border: 1px solid var(--redirect-border);
+}
+
+.destination-link a {
+  color: var(--redirect-primary);
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-all;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.95rem;
+}
+
+.destination-link a:hover {
+  text-decoration: underline;
+}
+
+.redirect-timer {
+  margin-top: 1.5rem;
+  position: relative;
+  height: 6px;
+  background: var(--redirect-gray-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.timer-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, var(--redirect-success), var(--redirect-primary));
+  border-radius: 3px;
+  animation: progressBar 2s linear forwards;
+}
+
+.redirect-timer span {
+  display: block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--redirect-gray);
+  font-weight: 500;
+}
+
+/* Redirect Actions */
+.redirect-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.redirect-actions button {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--redirect-radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--redirect-transition);
+  border: none;
+  font-family: inherit;
+}
+
+.back-btn,
+.cancel-btn {
+  background: white;
+  color: var(--redirect-gray);
+  border: 1px solid var(--redirect-border);
+}
+
+.back-btn:hover,
+.cancel-btn:hover {
+  background: var(--redirect-light);
+  border-color: var(--redirect-primary);
+  color: var(--redirect-primary);
+}
+
+.direct-link {
+  background: linear-gradient(135deg, var(--redirect-primary), var(--redirect-secondary));
+  color: white;
+  box-shadow: 0 2px 4px rgba(58, 134, 255, 0.2);
+}
+
+.direct-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(58, 134, 255, 0.25);
+}
+
+.home-link,
+.create-link {
+  background: linear-gradient(135deg, var(--redirect-success), #06b38a);
+  color: white;
+  box-shadow: 0 2px 4px rgba(6, 214, 160, 0.2);
+}
+
+.home-link:hover,
+.create-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(6, 214, 160, 0.25);
+}
+
+/* Redirect Info Section */
+.redirect-info {
+  max-width: 500px;
+  width: 100%;
+  margin-top: 2rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease 0.3s both;
+}
+
+.alias-info {
+  font-size: 0.95rem;
+  color: var(--redirect-gray);
+  margin-bottom: 1.5rem;
+  padding: 0.75rem;
+  background: white;
+  border-radius: var(--redirect-radius-md);
+  border: 1px solid var(--redirect-border);
+}
+
+.alias-info strong {
+  color: var(--redirect-dark);
+  font-weight: 700;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.create-your-own {
+  background: linear-gradient(135deg, rgba(58, 134, 255, 0.05), rgba(131, 56, 236, 0.05));
+  border-radius: var(--redirect-radius-lg);
+  padding: 1.5rem;
+  border: 1px solid rgba(58, 134, 255, 0.1);
+}
+
+.create-your-own p {
+  font-size: 1rem;
+  color: var(--redirect-dark);
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.create-your-own button {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--redirect-primary), var(--redirect-secondary));
+  color: white;
+  border: none;
+  border-radius: var(--redirect-radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--redirect-transition);
+  box-shadow: 0 2px 4px rgba(58, 134, 255, 0.2);
+}
+
+.create-your-own button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(58, 134, 255, 0.25);
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progressBar {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .redirect-page {
+    padding: 1.5rem;
+  }
+  
+  .redirect-error,
+  .password-form-container,
+  .redirect-message {
+    padding: 2rem 1.5rem;
+  }
+  
+  .redirect-error h2,
+  .password-form-container h2,
+  .redirect-message h2 {
+    font-size: 1.5rem;
+  }
+  
+  .redirect-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .redirect-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .redirect-page {
+    padding: 1rem;
+  }
+  
+  .redirect-error,
+  .password-form-container,
+  .redirect-message {
+    padding: 1.5rem 1.25rem;
+  }
+  
+  .redirect-error h2,
+  .password-form-container h2,
+  .redirect-message h2 {
+    font-size: 1.25rem;
+  }
+  
+  .spinner {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus {
+  outline: 2px solid var(--redirect-primary);
+  outline-offset: 2px;
+}
+
+/* Loading state enhancements */
+.redirect-loading p::after {
+  content: '';
+  animation: ellipsis 1.5s infinite;
+  display: inline-block;
+  width: 1em;
+  text-align: left;
+}
+
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.splash-content {
+  max-width: 600px;
+  width: 90%;
+  padding: 40px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.splash-title {
+  font-size: 32px;
+  margin-bottom: 16px;
+}
+
+.splash-message {
+  font-size: 18px;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.splash-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.splash-continue-btn {
+  background: #2196f3;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.splash-skip-btn {
+  background: transparent;
+  color: #757575;
+  border: 1px solid #ccc;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+@keyframes ellipsis {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+  100% { content: ''; }
+}

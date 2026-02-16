@@ -1,0 +1,37 @@
+/* src/components/RedirectPage/TextPageView.css */
+.text-page-view {
+  transition: all 0.3s ease;
+}
+
+.text-page-title {
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 0.5rem;
+}
+
+.text-page-content {
+  min-height: 200px;
+}
+
+.text-page-divider {
+  border: none;
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+
+.text-page-footer {
+  text-align: center;
+  color: #666;
+}
+
+.text-page-footer a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .text-page-view {
+    padding: 15px !important;
+    font-size: 14px !important;
+  }
+}

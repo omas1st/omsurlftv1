@@ -1,0 +1,92 @@
+/* Password Protection specific styles */
+.feature-password .password-fields {
+  margin-top: 12px;
+  padding-left: 16px;
+  border-left: 2px solid #e0e0e0;
+}
+
+.feature-password .password-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-password .password-input input {
+  flex: 1;
+}
+
+.feature-password .toggle-password {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #666;
+}
+
+.feature-password .toggle-password:hover {
+  color: #333;
+}
+
+.feature-password .error-text {
+  color: #f44336;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Ensure the checkbox label uses the same styles as in AnalyticsPrivate */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.checkbox-label input:checked + .checkbox-custom {
+  background: #2196f3;
+  border-color: #2196f3;
+}
+
+.checkbox-label input:checked + .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-text {
+  color: #333;
+  font-size: 14px;
+}
+
+.feature-description {
+  font-size: 12px;
+  color: #757575;
+  margin: 4px 0 0 26px; /* indent under the checkbox */
+  line-height: 1.4;
+}

@@ -1,0 +1,358 @@
+/* src/components/Tabs/Tabs.css */
+
+.tabs-container {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.tabs-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  padding: 0.25rem;
+  position: relative;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tabs-header::-webkit-scrollbar {
+  height: 3px;
+  background: transparent;
+}
+
+.tabs-header::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+
+.tab-btn {
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: fit-content;
+  flex-shrink: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.tab-btn:hover:not(.active) {
+  background: #f7fafc;
+  border-color: #cbd5e0;
+  color: #2d3748;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.tab-btn.active {
+  background: #4299e1;
+  color: white;
+  font-weight: 600;
+  border-color: #4299e1;
+  box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+  transform: translateY(-1px);
+}
+
+.tab-btn.active:hover {
+  background: #3182ce;
+  border-color: #3182ce;
+}
+
+/* Small variant - even smaller tabs */
+.tabs-container.small .tab-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  height: 30px;
+  border-radius: 4px;
+}
+
+/* Compact variant - minimal tabs */
+.tabs-container.compact .tab-btn {
+  padding: 0.25rem 0.625rem;
+  font-size: 0.7rem;
+  height: 28px;
+  border-radius: 3px;
+}
+
+/* Tab icon styling */
+.tab-btn .tab-icon {
+  font-size: 0.875rem;
+  line-height: 1;
+}
+
+.tabs-container.small .tab-btn .tab-icon {
+  font-size: 0.75rem;
+}
+
+.tabs-container.compact .tab-btn .tab-icon {
+  font-size: 0.7rem;
+}
+
+/* Tab count badge */
+.tab-btn .tab-count {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.tab-btn:not(.active) .tab-count {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+/* Active tab indicator - subtle bottom border */
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: #4299e1;
+  border-radius: 2px;
+}
+
+/* Disabled state */
+.tab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.tab-btn:disabled:hover {
+  background: white;
+  border-color: #e2e8f0;
+  color: #4a5568;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Loading state */
+.tab-btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.tab-btn.loading::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(66, 153, 225, 0.2);
+  border-top-color: #4299e1;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tabs-header {
+    gap: 0.375rem;
+    padding: 0.25rem;
+  }
+  
+  .tab-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    height: 32px;
+  }
+  
+  .tabs-container.small .tab-btn {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.7rem;
+    height: 28px;
+  }
+  
+  .tabs-container.compact .tab-btn {
+    padding: 0.125rem 0.5rem;
+    font-size: 0.65rem;
+    height: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabs-header {
+    gap: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+  
+  .tab-btn {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.7rem;
+    height: 30px;
+  }
+  
+  .tab-btn .tab-icon {
+    font-size: 0.75rem;
+  }
+  
+  /* Hide text on very small screens, show only icons */
+  .tabs-container.mobile-icons .tab-btn span:not(.tab-icon) {
+    display: none;
+  }
+  
+  .tabs-container.mobile-icons .tab-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    justify-content: center;
+  }
+  
+  .tabs-container.mobile-icons .tab-btn .tab-icon {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .tab-btn {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #cbd5e0;
+  }
+  
+  .tab-btn:hover:not(.active) {
+    background: #4a5568;
+    border-color: #718096;
+    color: #f7fafc;
+  }
+  
+  .tab-btn.active {
+    background: #4299e1;
+    border-color: #4299e1;
+    color: white;
+  }
+  
+  .tab-btn.active:hover {
+    background: #3182ce;
+    border-color: #3182ce;
+  }
+  
+  .tab-btn:disabled {
+    background: #1a202c;
+    border-color: #2d3748;
+    color: #718096;
+  }
+  
+  .tab-btn:not(.active) .tab-count {
+    background: #4a5568;
+    color: #e2e8f0;
+  }
+}
+
+/* Alternative color schemes */
+.tabs-container.primary .tab-btn.active {
+  background: #4299e1;
+  border-color: #4299e1;
+}
+
+.tabs-container.success .tab-btn.active {
+  background: #48bb78;
+  border-color: #48bb78;
+}
+
+.tabs-container.warning .tab-btn.active {
+  background: #ed8936;
+  border-color: #ed8936;
+}
+
+.tabs-container.danger .tab-btn.active {
+  background: #f56565;
+  border-color: #f56565;
+}
+
+/* Outline variant */
+.tabs-container.outline .tab-btn.active {
+  background: transparent;
+  color: #4299e1;
+  border-color: #4299e1;
+}
+
+.tabs-container.outline.primary .tab-btn.active {
+  color: #4299e1;
+  border-color: #4299e1;
+}
+
+.tabs-container.outline.success .tab-btn.active {
+  color: #48bb78;
+  border-color: #48bb78;
+}
+
+.tabs-container.outline.warning .tab-btn.active {
+  color: #ed8936;
+  border-color: #ed8936;
+}
+
+.tabs-container.outline.danger .tab-btn.active {
+  color: #f56565;
+  border-color: #f56565;
+}
+
+/* Pill variant */
+.tabs-container.pill .tab-btn {
+  border-radius: 50px;
+}
+
+.tabs-container.pill.small .tab-btn {
+  border-radius: 50px;
+}
+
+.tabs-container.pill.compact .tab-btn {
+  border-radius: 50px;
+}
+
+/* Segmented control style */
+.tabs-container.segmented .tabs-header {
+  background: #edf2f7;
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.tabs-container.segmented .tab-btn {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
+.tabs-container.segmented .tab-btn.active {
+  background: white;
+  color: #2d3748;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabs-container.segmented.dark .tabs-header {
+  background: #2d3748;
+}
+
+.tabs-container.segmented.dark .tab-btn.active {
+  background: #4a5568;
+  color: #f7fafc;
+}

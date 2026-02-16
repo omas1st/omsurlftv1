@@ -1,0 +1,511 @@
+/* =========================================
+   AnalyticsPage.css – Professional, Mobile-First
+   No colored borders on containers. 
+   Compact sizing for small screens.
+========================================= */
+
+/* ---------- CSS Reset & Variables ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color palette – clean, minimal */
+  --color-primary: #2563eb;
+  --color-primary-light: #3b82f6;
+  --color-primary-dark: #1d4ed8;
+  --color-error: #dc2626;
+  --color-warning: #f59e0b;
+  --color-success: #10b981;
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-700: #374151;
+  --color-gray-800: #1f2937;
+  --color-gray-900: #111827;
+  --color-white: #ffffff;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+
+  /* Spacing – small scale for mobile */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
+  --space-6: 1.5rem;   /* 24px */
+
+  /* Border radius – subtle */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem;   /* 8px */
+
+  /* Shadows – very light */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+
+  /* No colored borders – only use background or shadow separation */
+}
+
+/* ---------- Base Mobile Styles ---------- */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-gray-50);
+  color: var(--color-gray-900);
+  line-height: 1.5;
+  font-size: 14px; /* slightly smaller for mobile */
+}
+
+/* ---------- Utility / Spinner ---------- */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--color-gray-200);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ---------- Loading & Error / Private States ---------- */
+.analytics-loading,
+.analytics-error,
+.private-analytics {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: var(--space-4);
+  text-align: center;
+}
+
+.analytics-loading p,
+.analytics-error p,
+.private-analytics p {
+  margin-top: var(--space-3);
+  color: var(--color-gray-600);
+  font-size: 0.9375rem;
+}
+
+.error-icon,
+.private-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--space-2);
+}
+
+.analytics-error h3,
+.private-analytics h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+  color: var(--color-gray-800);
+}
+
+.retry-btn,
+.login-btn,
+.overall-btn {
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retry-btn:hover,
+.login-btn:hover,
+.overall-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* ---------- Main Page Layout ---------- */
+.analytics-page {
+  max-width: 100%;
+  padding: var(--space-3);
+  margin: 0 auto;
+}
+
+/* ---------- Section Styles (no borders) ---------- */
+section {
+  margin-bottom: var(--space-5);
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  /* no colored border */
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: var(--space-3);
+}
+
+.section-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-gray-800);
+  letter-spacing: -0.01em;
+}
+
+.time-range-label {
+  font-size: 0.75rem;
+  color: var(--color-gray-500);
+  background-color: var(--color-gray-100);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Selectors Section – Compact ---------- */
+.analytics-selectors-section {
+  padding: var(--space-3);
+}
+
+.selectors-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.selector-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-gray-600);
+}
+
+/* URL selector row */
+.selector-with-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.url-selector {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  background-color: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  color: var(--color-gray-800);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 1.25rem;
+  padding-right: 2rem;
+}
+
+.url-selector:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.visit-url-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-size: 1.125rem;
+  transition: background-color 0.2s;
+}
+
+.visit-url-btn:hover {
+  background-color: var(--color-gray-200);
+}
+
+/* Time range buttons */
+.time-selector-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.time-range-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.time-range-btn {
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.time-range-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.time-range-btn:not(.active):hover {
+  background-color: var(--color-gray-200);
+}
+
+/* Custom date picker – small */
+.custom-date-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1 1 150px;
+}
+
+.date-input-group label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  text-transform: uppercase;
+}
+
+.date-input-group input[type="date"] {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.75rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-white);
+  color: var(--color-gray-800);
+}
+
+/* Timezone buttons */
+.timezone-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.timezone-btn {
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--color-gray-100);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-gray-700);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.timezone-btn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+/* Export group layout */
+.export-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.export-main-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-gray-900);
+  color: var(--color-white);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.export-main-btn:hover {
+  background-color: var(--color-gray-800);
+}
+
+/* ---------- Small Stats Row ---------- */
+.section-small-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.stat-item {
+  background-color: var(--color-gray-50);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-gray-600);
+  letter-spacing: 0.02em;
+}
+
+.stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-gray-900);
+  line-height: 1.2;
+}
+
+/* ---------- URL Info Section (if present) ---------- */
+.url-info-section {
+  background-color: var(--color-gray-50);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  font-size: 0.8125rem;
+  color: var(--color-gray-700);
+  /* no border */
+}
+
+/* ---------- Chart Sections ---------- */
+.stats-chart-section,
+.top-countries-section,
+.browser-usage-section,
+.os-usage-section,
+.language-section,
+.hourly-analytics-section,
+.sankey-section,
+.recent-visitors-section,
+.analytics-overview-section {
+  padding: var(--space-4);
+}
+
+/* Ensure charts inside are responsive and don't overflow */
+[class$="Chart"] {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  min-height: 250px; /* reasonable for mobile */
+}
+
+/* ---------- Recent Visitors Widget ---------- */
+.recent-visitors-section table,
+.recent-visitors-section .visitor-list {
+  width: 100%;
+  font-size: 0.75rem;
+  border-collapse: collapse;
+}
+
+.recent-visitors-section th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-gray-600);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.recent-visitors-section td {
+  padding: var(--space-2) 0;
+  color: var(--color-gray-800);
+}
+
+/* ---------- Responsive adjustments for slightly larger screens ---------- */
+@media (min-width: 640px) {
+  .analytics-page {
+    padding: var(--space-4);
+  }
+
+  .selectors-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .selector-group {
+    flex: 1 1 200px;
+  }
+
+  .section-small-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+}
+
+/* ---------- Print / High Contrast / Reduced Motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- No Colored Borders – already avoided ---------- */
+/* Ensure no container uses border property with a color */
+.analytics-page section,
+.analytics-page div,
+.analytics-page button,
+.analytics-page select,
+.analytics-page input {
+  border: none; /* no borders at all, or very subtle ones for inputs */
+}
+
+/* Only inputs and selects get a very light gray border – not colored */
+input,
+select {
+  border: 1px solid var(--color-gray-200); /* neutral gray */
+}
+
+/* Remove outlines but keep focus accessible */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* All done – compact, clean, mobile-first */
