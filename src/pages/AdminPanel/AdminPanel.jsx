@@ -34,8 +34,8 @@ const AdminPanel = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await adminAPI.getStats();
-      setStats(response.data);
+      const response = await adminAPI.adminStats(); // fixed method name
+      setStats(response.data.data);                  // fixed response structure
     } catch (error) {
       console.error('Error fetching admin stats:', error);
     }

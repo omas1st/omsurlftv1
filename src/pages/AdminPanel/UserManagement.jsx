@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
-import './AdminPanel.css';
+import './UserManagement.css';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -34,9 +34,9 @@ const UserManagement = () => {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.getUsers();
-      setUsers(response.data.users);
-      setFilteredUsers(response.data.users);
+      const response = await adminAPI.users(); // fixed method name
+      setUsers(response.data.data.users);      // fixed response structure
+      setFilteredUsers(response.data.data.users);
     } catch (error) {
       toast.error('Failed to fetch users');
     } finally {

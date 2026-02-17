@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { adminAPI } from '../../services/api';
 import toast from 'react-hot-toast';
-import './AdminPanel.css';
+import './ProjectManagement.css';
 
 const ProjectManagement = () => {
   const [urls, setUrls] = useState([]);
@@ -27,9 +27,9 @@ const ProjectManagement = () => {
   const fetchUrls = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.getUrls();
-      setUrls(response.data.urls);
-      setFilteredUrls(response.data.urls);
+      const response = await adminAPI.allUrls(); // fixed method name
+      setUrls(response.data.data.urls);          // fixed response structure
+      setFilteredUrls(response.data.data.urls);
     } catch (error) {
       toast.error('Failed to fetch URLs');
     } finally {

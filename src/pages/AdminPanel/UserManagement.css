@@ -1,0 +1,471 @@
+/* ===== UserManagement.css ===== */
+/* Professional mobile-first styling for the User Management component */
+
+/* ----- CSS Variables (for easy theming) ----- */
+:root {
+  --primary-color: #4361ee;
+  --danger-color: #e63946;
+  --success-color: #2a9d8f;
+  --warning-color: #e9c46a;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --bg-light: #f8fafc;
+  --bg-white: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --font-base: 14px;        /* small base for mobile */
+  --font-small: 12px;
+  --font-large: 16px;
+  --border-radius: 8px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+}
+
+/* ----- Reset & Base ----- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  font-size: var(--font-base);
+  line-height: 1.5;
+}
+
+/* ----- Container ----- */
+.user-management {
+  max-width: 100%;
+  padding: var(--spacing-md);
+  margin: 0 auto;
+}
+
+/* ----- Header ----- */
+.management-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.management-header h2 {
+  font-size: 1.5rem;        /* 24px */
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.management-header .subtitle {
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+}
+
+/* ----- Filters Section ----- */
+.management-filters {
+  margin-bottom: var(--spacing-lg);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.filter-group input,
+.filter-group select,
+.filter-group button {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-base);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-white);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.reset-filters-btn {
+  background-color: var(--bg-light);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+
+.reset-filters-btn:hover {
+  background-color: var(--border-color);
+}
+
+/* ----- Table (scrollable on mobile) ----- */
+.management-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--spacing-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  background: var(--bg-white);
+}
+
+.management-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;          /* forces horizontal scroll on mobile */
+  font-size: var(--font-small);
+}
+
+.management-table th,
+.management-table td {
+  padding: var(--spacing-md) var(--spacing-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.management-table th {
+  background-color: var(--bg-light);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.management-table td {
+  color: var(--text-primary);
+}
+
+/* User cell with avatar */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--font-base);
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info strong {
+  font-weight: 600;
+  font-size: var(--font-base);
+}
+
+.user-info small {
+  font-size: calc(var(--font-small) - 2px);
+  color: var(--text-secondary);
+}
+
+/* Badges */
+.tier-badge,
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: calc(var(--font-small) - 2px);
+  font-weight: 500;
+  text-transform: capitalize;
+  background-color: var(--bg-light);
+  color: var(--text-secondary);
+}
+
+.tier-badge.premium,
+.badge.premium {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.tier-badge.enterprise {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.badge.restricted {
+  background-color: #fee2e2;
+  color: var(--danger-color);
+}
+
+.badge.active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: var(--border-radius);
+  background-color: var(--bg-light);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.action-btn:hover {
+  background-color: var(--border-color);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.view-btn {
+  color: var(--primary-color);
+}
+
+.edit-btn {
+  color: var(--warning-color);
+}
+
+.restrict-btn {
+  color: var(--danger-color);
+}
+
+.unrestrict-btn {
+  color: var(--success-color);
+}
+
+/* No results */
+.no-results {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-size: var(--font-base);
+}
+
+/* ----- Modals ----- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-md);
+}
+
+.admin-modal {
+  background-color: var(--bg-white);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-lg);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+
+.admin-modal h3 {
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: var(--font-small);
+  color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-size: var(--font-base);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-white);
+  font-family: inherit;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: var(--font-base);
+  color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary-color);
+}
+
+.modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.modal-actions button {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: var(--font-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 100px;
+  text-align: center;
+}
+
+.confirm-btn {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.confirm-btn:hover {
+  background-color: #3651d4;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.danger-btn {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.danger-btn:hover {
+  background-color: #d32f2f;
+}
+
+.cancel-btn {
+  background-color: var(--bg-light);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.cancel-btn:hover {
+  background-color: var(--border-color);
+}
+
+/* ----- Loading Spinner ----- */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: var(--spacing-md);
+  color: var(--text-secondary);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----- Small adjustments for larger screens (optional) ----- */
+@media (min-width: 768px) {
+  .user-management {
+    padding: var(--spacing-xl);
+  }
+
+  .filter-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-group input,
+  .filter-group select {
+    width: auto;
+    flex: 1 1 180px;
+  }
+
+  .reset-filters-btn {
+    width: auto;
+    flex: 0 0 auto;
+  }
+
+  .management-table table {
+    min-width: 100%;         /* allow table to use full width */
+    white-space: normal;     /* allow text wrap */
+  }
+}
+
+/* ----- Touch-friendly tweaks for mobile ----- */
+@media (max-width: 480px) {
+  .action-btn {
+    width: 44px;             /* larger tap target */
+    height: 44px;
+  }
+
+  .modal-actions button {
+    flex: 1 1 100%;          /* stack buttons on very small screens */
+  }
+
+  .admin-modal {
+    padding: var(--spacing-md);
+  }
+}
