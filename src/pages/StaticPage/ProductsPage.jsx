@@ -54,7 +54,7 @@ const ProductsPage = () => {
         <header className="products-header">
           <h1>OmsUrl Products</h1>
           <p className="subhead">
-            A complete suite of powerful, privacy-first linking tools — all <strong>100% free</strong>, with no sign-up required for basic features.
+            A complete suite of powerful, privacy-first linking tools — all <strong>free</strong>, with no sign-up required for basic features.
           </p>
         </header>
 
