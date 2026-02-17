@@ -267,7 +267,7 @@ const URLShortener = () => {
             >
               <span className="toggle-icon">⚙️</span>
               <span>Advanced Settings</span>
-              {!user && <span className="login-indicator"> (Login Required)</span>}
+              {!user && <span className="login-indicator"> </span>}
               <span className="toggle-arrow">{showAdvanced ? '▲' : '▼'}</span>
             </button>
             

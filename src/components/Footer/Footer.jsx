@@ -1,5 +1,6 @@
 // src/components/Footer/Footer.jsx
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom'; // added for navigation
 import { contactAPI } from '../../services/api';
 import './Footer.css';
 
@@ -14,12 +15,10 @@ const Footer = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     
-    // Reset states
     setError('');
     setSuccess('');
     setLoading(true);
 
-    // Basic validation
     if (!message.trim()) {
       setError('Message is required');
       setLoading(false);
@@ -39,11 +38,9 @@ const Footer = () => {
     }
 
     try {
-      // Create abort controller for timeout
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      // API call to send message to admin
       const response = await contactAPI.sendMessage(
         { email, message },
         { signal: controller.signal }
@@ -53,7 +50,6 @@ const Footer = () => {
 
       if (response.data.success) {
         setSuccess('Message sent successfully!');
-        // Reset form after 2 seconds
         setTimeout(() => {
           setShowHelpPopup(false);
           setMessage('');
@@ -70,13 +66,10 @@ const Footer = () => {
       if (err.name === 'AbortError' || err.code === 'ECONNABORTED') {
         setError('Request timeout. Please try again.');
       } else if (err.response) {
-        // Server responded with error
         setError(err.response.data?.message || err.message || 'Failed to send message');
       } else if (err.request) {
-        // No response received
         setError('Network error. Please check your connection and try again.');
       } else {
-        // Other errors
         setError(err.message || 'Failed to send message');
       }
     } finally {
@@ -107,7 +100,16 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-content">
+        {/* New navigation links */}
+        <nav className="footer-nav">
+          <Link to="/about">About</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
+          <Link to="/products">Products</Link>
+        </nav>
+
         <p>© 2025 OmsUrl</p>
+
         <button 
           className="help-btn"
           onClick={() => setShowHelpPopup(true)}

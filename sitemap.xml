@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+    <!-- Homepage - Highest Priority -->
+    <url>
+        <loc>https://www.omsurl.com/</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Static Pages -->
+    <url>
+        <loc>https://www.omsurl.com/about</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/privacy</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/terms</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/products</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Authentication Pages -->
+    <url>
+        <loc>https://www.omsurl.com/login</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/register</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/forgot-password</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- Tool Pages (Core Features) -->
+    <url>
+        <loc>https://www.omsurl.com/</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <!-- Note: QR Generator, Text Destination, Bulk URLs are features on homepage -->
+    <!-- If they have dedicated pages, add them here -->
+    <!-- <url>
+        <loc>https://www.omsurl.com/qr-generator</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url> -->
+
+    <!-- Analytics Pages (Public) -->
+    <url>
+        <loc>https://www.omsurl.com/analytics</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <!-- Note: Dynamic analytics URLs like /:alias/analytics should NOT be included -->
+    <!-- They are generated dynamically and would create infinite URLs -->
+
+    <!-- Protected Pages (Indexed but require login) -->
+    <url>
+        <loc>https://www.omsurl.com/dashboard</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://www.omsurl.com/manage</loc>
+        <lastmod>2026-02-17</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+</urlset>

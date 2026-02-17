@@ -23,6 +23,12 @@ import AdminPanel from './pages/AdminPanel/AdminPanel';
 import AnalyticsPage from './pages/AnalyticsPage/AnalyticsPage';
 import RedirectPage from './pages/RedirectPage/RedirectPage';
 
+// New Static Pages (adjust paths if needed)
+import AboutPage from './pages/StaticPage/AboutPage.jsx';
+import PrivacyPolicy from './pages/StaticPage/PrivacyPolicy.jsx';
+import TermsOfService from './pages/StaticPage/TermsOfService.jsx';
+import ProductsPage from './pages/StaticPage/ProductsPage.jsx';
+
 // Layout component that includes Header and Footer
 const MainLayout = () => (
   <>
@@ -85,6 +91,12 @@ function AppContent() {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* New static pages */}
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/products" element={<ProductsPage />} />
 
           {/* Analytics (public with restrictions) */}
           <Route
