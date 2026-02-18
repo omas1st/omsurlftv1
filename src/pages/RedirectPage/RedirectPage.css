@@ -33,10 +33,18 @@
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 }
 
-/* Common Loading State */
+/* Common Loading State - Updated with background image */
 .redirect-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../../public/favicon.ico');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   text-align: center;
-  max-width: 400px;
   width: 100%;
   animation: fadeIn 0.3s ease;
 }
@@ -56,6 +64,14 @@
   color: var(--redirect-dark);
   font-weight: 500;
   margin-top: 1rem;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+.rule-hint {
+  font-size: 0.95rem;
+  color: var(--redirect-gray);
+  margin-top: 0.5rem;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
 }
 
 /* Common Error State */

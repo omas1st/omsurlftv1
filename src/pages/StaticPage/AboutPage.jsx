@@ -34,8 +34,7 @@ const AboutPage = () => {
           <h2>Built By</h2>
           <p>
             OmsUrl is developed and maintained by Omslabs. If you'd like to provide feedback,
-            report an issue, or request a feature, please use the contact form on the site
-            or email us (see the Contact section in the footer).
+            report an issue, or request a feature, please email us at <a href="mailto:omslabs1st@gmail.com">omslabs1st@gmail.com</a>.
           </p>
         </section>
 

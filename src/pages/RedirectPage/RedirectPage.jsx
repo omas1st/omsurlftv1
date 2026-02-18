@@ -326,7 +326,7 @@ const RedirectPage = () => {
     return (
       <div className="redirect-loading">
         <div className="spinner"></div>
-        <p>Verifying URL and preparing redirect...</p>
+        <p>Loading</p>
         {evaluatingRules && <p className="rule-hint">Evaluating routing rules...</p>}
       </div>
     );
@@ -447,8 +447,8 @@ const RedirectPage = () => {
               <p>{redirectData.message}</p>
               <p className="contact-info">
                 For assistance, contact support:{' '}
-                <a href={`mailto:${process.env.REACT_APP_ADMIN_EMAIL || 'support@omsurl.com'}`}>
-                  {process.env.REACT_APP_ADMIN_EMAIL || 'support@omsurl.com'}
+                <a href={`mailto:${process.env.REACT_APP_ADMIN_EMAIL || 'omslabs1st@gmail.com'}`}>
+                  {process.env.REACT_APP_ADMIN_EMAIL || 'omslabs1st@gmail.com'}
                 </a>
               </p>
             </div>
@@ -499,7 +499,7 @@ const RedirectPage = () => {
               </div>
               <div className="redirect-timer">
                 <div className="timer-bar"></div>
-                <span>Redirecting in 2s</span>
+                <span>Redirecting in 1s</span>
               </div>
             </div>
             <div className="redirect-actions">
@@ -532,7 +532,7 @@ const RedirectPage = () => {
 
       <div className="redirect-info">
         <p className="alias-info">
-          Short URL: <strong>/{alias}</strong>
+          Short URL: <strong>omsurl.com/{alias}</strong>
         </p>
         <div className="create-your-own">
           <p>Create your own professional short URLs</p>
