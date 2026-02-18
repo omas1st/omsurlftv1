@@ -205,20 +205,7 @@ const URLShortener = () => {
       </div>
 
       {showBulkUpload ? (
-        // Conditionally render BulkUpload only if user is logged in
-        user ? (
-          <BulkUpload onComplete={handleBulkComplete} />
-        ) : (
-          <div className="login-prompt-bulk">
-            <p>🔒 Please log in to use the bulk upload feature.</p>
-            <button 
-              className="login-prompt-btn"
-              onClick={() => window.location.href = '/login'}
-            >
-              Login / Sign Up
-            </button>
-          </div>
-        )
+        <BulkUpload onComplete={handleBulkComplete} />
       ) : (
         <form onSubmit={handleSubmit} className="shortener-form">
           <div className="form-header">
