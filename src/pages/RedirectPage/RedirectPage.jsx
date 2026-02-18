@@ -491,15 +491,10 @@ const RedirectPage = () => {
           <div className="redirect-message redirecting">
             <h2>↪️ Redirecting...</h2>
             <div className="message-content">
-              <p>You are being redirected to the destination URL:</p>
-              <div className="destination-link">
-                <a href={redirectData.destination} target="_blank" rel="noopener noreferrer">
-                  {redirectData.destination}
-                </a>
-              </div>
+
               <div className="redirect-timer">
                 <div className="timer-bar"></div>
-                <span>Redirecting in 1s</span>
+                <span>Redirecting...</span>
               </div>
             </div>
             <div className="redirect-actions">
