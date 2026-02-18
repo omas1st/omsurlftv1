@@ -27,8 +27,8 @@ const ProjectManagement = () => {
   const fetchUrls = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await adminAPI.allUrls(); // fixed method name
-      setUrls(response.data.data.urls);          // fixed response structure
+      const response = await adminAPI.allUrls();
+      setUrls(response.data.data.urls);
       setFilteredUrls(response.data.data.urls);
     } catch (error) {
       toast.error('Failed to fetch URLs');
@@ -110,14 +110,22 @@ const ProjectManagement = () => {
 
   const confirmRestrictUrl = async () => {
     try {
-      await adminAPI.restrictUrl(selectedUrl._id, restrictData);
+      // Determine which API endpoint to call based on current restricted status
+      if (selectedUrl.restricted) {
+        // URL is currently restricted → we want to unrestrict it
+        await adminAPI.unrestrictUrl(selectedUrl._id);
+        toast.success('URL unrestricted successfully');
+      } else {
+        // URL is not restricted → we want to restrict it
+        await adminAPI.restrictUrl(selectedUrl._id, restrictData);
+        toast.success('URL restricted successfully');
+      }
       
-      toast.success('URL restricted successfully');
       setShowRestrictModal(false);
       setSelectedUrl(null);
-      fetchUrls();
+      fetchUrls(); // Refresh the list
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to restrict URL');
+      toast.error(error.response?.data?.message || 'Failed to update URL restriction');
     }
   };
 
