@@ -1,13 +1,20 @@
 // src/services/api.js - UPDATED with missing methods for ManageURLs
 import axios from 'axios';
 
-// Log the environment variable for debugging
-console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+// Only log in development
+const isDev = process.env.NODE_ENV === 'development';
+
+// Log the environment variable for debugging (only in dev)
+if (isDev) {
+  console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+}
 
 // Helper to get base URL
 const getBaseURL = () => {
   const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-  console.log('Using base URL:', url);
+  if (isDev) {
+    console.log('Using base URL:', url);
+  }
   return url;
 };
 
@@ -36,12 +43,16 @@ api.interceptors.request.use(
 
     // Avoid crashing if method is undefined in rare cases
     const method = (config.method || '').toUpperCase();
-    console.log(`API Request: ${method} ${config.baseURL}${config.url}`, config.data);
+    if (isDev) {
+      console.log(`API Request: ${method} ${config.baseURL}${config.url}`, config.data);
+    }
 
     return config;
   },
   (error) => {
-    console.error('Request error:', error);
+    if (isDev) {
+      console.error('Request error:', error);
+    }
     return Promise.reject(error);
   }
 );
@@ -49,16 +60,20 @@ api.interceptors.request.use(
 // Response interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`, response.data);
+    if (isDev) {
+      console.log(`API Response: ${response.status} ${response.config.url}`, response.data);
+    }
     return response;
   },
   async (error) => {
-    console.error('API Error:', {
-      status: error.response?.status,
-      url: error.config?.url,
-      message: error.message,
-      response: error.response?.data,
-    });
+    if (isDev) {
+      console.error('API Error:', {
+        status: error.response?.status,
+        url: error.config?.url,
+        message: error.message,
+        response: error.response?.data,
+      });
+    }
 
     const originalRequest = error.config;
 
@@ -75,14 +90,18 @@ api.interceptors.response.use(
       if (originalRequest._retryCount < 3) {
         originalRequest._retryCount++;
         
-        // Log retry attempt
-        console.log(`Rate limited. Retry ${originalRequest._retryCount}/3 after ${waitTime}ms`);
+        // Log retry attempt (only in dev)
+        if (isDev) {
+          console.log(`Rate limited. Retry ${originalRequest._retryCount}/3 after ${waitTime}ms`);
+        }
         
         // Wait and retry
         await new Promise(resolve => setTimeout(resolve, waitTime));
         return api(originalRequest);
       } else {
-        console.warn('Maximum retry attempts (3) reached for rate limit');
+        if (isDev) {
+          console.warn('Maximum retry attempts (3) reached for rate limit');
+        }
         error.message = 'Too many requests. Please try again later.';
         return Promise.reject(error);
       }

@@ -1,124 +1,144 @@
 // src/pages/ReferralPage/ReferralPage.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import coinService from '../../services/coin';
 import toast from 'react-hot-toast';
 import './ReferralPage.css';
 
+const REFERRAL_BONUS = 20; // matches backend constant
+
 const ReferralPage = () => {
+  const { user } = useContext(AuthContext);
   const [referralCode, setReferralCode] = useState('');
   const [referralUrl, setReferralUrl] = useState('');
+  const [stats, setStats] = useState({
+    totalReferrals: 0,
+    earnedCoins: 0,
+    pendingReferrals: 0,
+  });
   const [loading, setLoading] = useState(true);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
-    fetchReferralCode();
+    fetchReferralData();
   }, []);
 
-  const fetchReferralCode = async () => {
+  const fetchReferralData = async () => {
     setLoading(true);
     try {
-      const res = await coinService.getReferralCode();
-      if (res.success) {
-        setReferralCode(res.code);
-        setReferralUrl(res.url);
+      // Get referral code and URL
+      const codeResult = await coinService.getReferralCode();
+      if (codeResult.success) {
+        setReferralCode(codeResult.code);
+        setReferralUrl(codeResult.url);
+        if (codeResult.stats) {
+          setStats(codeResult.stats);
+        }
       } else {
-        // If failed, try generating a new one
-        toast.error(res.message || 'Failed to load referral code');
-        // Optionally auto-generate? We'll let user click button
+        toast.error('Failed to load referral information');
+      }
+
+      // Get referral stats separately
+      const statsResult = await coinService.getReferralStats();
+      if (statsResult.success) {
+        setStats(statsResult.stats);
       }
     } catch (error) {
-      toast.error('Failed to load referral data');
-      console.error('Referral fetch error:', error);
+      console.error('Referral page error:', error);
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
-  const generateNewCode = async () => {
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(referralUrl);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+    toast.success('Referral link copied!');
+  };
+
+  const handleGenerateNewCode = async () => {
     try {
-      const res = await coinService.generateReferralCode();
-      if (res.success) {
-        setReferralCode(res.code);
-        setReferralUrl(res.url);
+      const result = await coinService.generateReferralCode();
+      if (result.success) {
+        setReferralCode(result.code);
+        setReferralUrl(result.url);
         toast.success('New referral code generated!');
       } else {
-        toast.error(res.message || 'Failed to generate new code');
+        toast.error(result.message || 'Failed to generate new code');
       }
     } catch (error) {
-      toast.error('Failed to generate new code');
+      toast.error('An error occurred');
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard!');
-  };
-
   if (loading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="referral-loading">
+        <div className="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
     <div className="referral-page">
-      <h1>Refer & Earn</h1>
-      <p>Invite your friends and earn 20 coins for each successful registration!</p>
+      <h1 className="page-title">Refer & Earn</h1>
+      <p className="page-subtitle">
+        Invite your friends to join OmsUrl and earn {REFERRAL_BONUS} coins for each successful referral!
+      </p>
+
+      <div className="referral-stats">
+        <div className="stat-card">
+          <div className="stat-icon">👥</div>
+          <div className="stat-content">
+            <h3>Total Referrals</h3>
+            <p className="stat-value">{stats.totalReferrals || 0}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">🪙</div>
+          <div className="stat-content">
+            <h3>Coins Earned</h3>
+            <p className="stat-value">{stats.earnedCoins || 0}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">⏳</div>
+          <div className="stat-content">
+            <h3>Pending</h3>
+            <p className="stat-value">{stats.pendingReferrals || 0}</p>
+          </div>
+        </div>
+      </div>
 
       <div className="referral-code-section">
         <h2>Your Referral Code</h2>
         <div className="code-box">
-          <span className="code">{referralCode || 'No code yet'}</span>
-          <button onClick={() => copyToClipboard(referralCode)} disabled={!referralCode}>
-            Copy
+          <span className="code">{referralCode || user?.referralCode}</span>
+          <button className="copy-btn" onClick={handleCopyLink}>
+            {copySuccess ? 'Copied!' : 'Copy Link'}
           </button>
         </div>
-
-        <h2>Referral Link</h2>
-        <div className="link-box">
-          <input
-            type="text"
-            value={referralUrl || (referralCode ? `${window.location.origin}/register?ref=${referralCode}` : '')}
-            readOnly
-          />
-          <button
-            onClick={() => copyToClipboard(referralUrl || `${window.location.origin}/register?ref=${referralCode}`)}
-            disabled={!referralCode}
-          >
-            Copy
-          </button>
-        </div>
-
-        <button className="generate-btn" onClick={generateNewCode}>
+        <p className="code-note">
+          Share this link with your friends: <br />
+          <a href={referralUrl} target="_blank" rel="noopener noreferrer" className="referral-link">
+            {referralUrl}
+          </a>
+        </p>
+        <button className="generate-new-btn" onClick={handleGenerateNewCode}>
           Generate New Code
         </button>
       </div>
 
-      <div className="share-options">
-        <h3>Share on Social Media</h3>
-        <div className="share-buttons">
-          <a
-            href={`https://twitter.com/intent/tweet?text=Join me on Short.ly! Use my referral link: ${referralUrl || (referralCode ? `${window.location.origin}/register?ref=${referralCode}` : '')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="share-btn twitter"
-          >
-            Twitter
-          </a>
-          <a
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(referralUrl || (referralCode ? `${window.location.origin}/register?ref=${referralCode}` : ''))}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="share-btn facebook"
-          >
-            Facebook
-          </a>
-          <a
-            href={`https://wa.me/?text=${encodeURIComponent(`Join Short.ly using my referral link: ${referralUrl || (referralCode ? `${window.location.origin}/register?ref=${referralCode}` : '')}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="share-btn whatsapp"
-          >
-            WhatsApp
-          </a>
-        </div>
+      <div className="referral-info">
+        <h3>How it works</h3>
+        <ul>
+          <li>Share your unique referral link with friends.</li>
+          <li>When they sign up using your link, you earn {REFERRAL_BONUS} coins.</li>
+          <li>Coins can be used to unlock premium features like bulk upload and splash screens.</li>
+        </ul>
       </div>
     </div>
   );
