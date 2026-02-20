@@ -23,6 +23,7 @@ const UserDashboard = () => {
   const [recentUrls, setRecentUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [analyticsData, setAnalyticsData] = useState(null);
+  const [showCoinInfo, setShowCoinInfo] = useState(false); // State for coin info popup
 
   // ✅ Mounted ref – defined at top level, never inside a callback
   const mountedRef = useRef(true);
@@ -170,7 +171,18 @@ const UserDashboard = () => {
           <div className="info-card coin-balance">
             <div className="card-icon">🪙</div>
             <div className="card-content">
-              <h3>Coin Balance</h3>
+              <h3>
+                Coin Balance
+                <span 
+                  className="coin-info-icon"
+                  onClick={() => setShowCoinInfo(true)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Coin information"
+                >
+                  ⓘ
+                </span>
+              </h3>
               <p className="balance">{user?.coins || 0} coins</p>
             </div>
           </div>
@@ -181,7 +193,10 @@ const UserDashboard = () => {
               <h3>Current Tier</h3>
               <p className="tier">{user?.tier || 'Free'}</p>
               {user?.tier === 'free' && (
-                <button className="upgrade-btn">
+                <button 
+                  className="upgrade-btn"
+                  onClick={() => alert("Feature not available yet")}
+                >
                   Upgrade
                 </button>
               )}
@@ -189,6 +204,22 @@ const UserDashboard = () => {
           </div>
         </div>
       </section>
+
+      {/* Coin Info Modal */}
+      {showCoinInfo && (
+        <div className="coin-info-modal-overlay" onClick={() => setShowCoinInfo(false)}>
+          <div className="coin-info-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setShowCoinInfo(false)}>×</button>
+            <h4>About Coins</h4>
+            <ul>
+              <li>✨ You received 100 coins for registration.</li>
+              <li>📤 Upload features cost coins to use.</li>
+              <li>✅ Other features are completely free.</li>
+              <li>⏰ If your coins run out, visit daily to earn more.</li>
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* Section 2: Stats */}
       <section className="dashboard-stats">
@@ -265,13 +296,27 @@ const UserDashboard = () => {
             <p>Manage all your links</p>
           </Link>
 
-          <Link to="/settings" className="action-card">
+          <Link 
+            to="/settings" 
+            className="action-card"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Feature not available yet");
+            }}
+          >
             <div className="action-icon">⚡</div>
             <h3>Advanced</h3>
             <p>Configure advanced settings</p>
           </Link>
 
-          <Link to="/refer" className="action-card">
+          <Link 
+            to="/refer" 
+            className="action-card"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Feature not available yet");
+            }}
+          >
             <div className="action-icon">🎁</div>
             <h3>Refer & Earn</h3>
             <p>Earn coins by referring friends</p>
