@@ -332,3 +332,16 @@
     padding: var(--spacing-sm) var(--spacing-md);
   }
 }
+
+/* Map popup */
+.map-popup {
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  max-width: 200px;
+}
+
+.map-popup strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--primary-color);
+}

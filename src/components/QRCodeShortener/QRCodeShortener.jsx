@@ -1,4 +1,3 @@
-// src/components/QRCodeShortener/QRCodeShortener.jsx
 import React, { useState, useContext, useRef } from 'react';
 import QRCode from 'react-qr-code';
 import html2canvas from 'html2canvas';
@@ -105,7 +104,12 @@ const QRCodeShortener = () => {
 
     } catch (err) {
       console.error('QR generation error:', err);
-      setError(err.response?.data?.message || 'QR code generation failed. Please check the URL and try again.');
+      // Handle coin‑related errors from backend
+      if (err.response?.data?.message?.includes('coins')) {
+        setError(err.response.data.message);
+      } else {
+        setError(err.response?.data?.message || 'QR code generation failed. Please check the URL and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -262,19 +266,28 @@ const QRCodeShortener = () => {
           </small>
         </div>
 
-        {/* Customization toggle button */}
-        <button
-          type="button"
-          className="section-toggle-btn"
-          onClick={() => setShowCustomization(!showCustomization)}
-        >
-          <span>QR Code Customization</span>
-          <span>{showCustomization ? '▲' : '▼'}</span>
-        </button>
+        {/* Customization toggle – only visible to logged‑in users */}
+        {user ? (
+          <button
+            type="button"
+            className="section-toggle-btn"
+            onClick={() => setShowCustomization(!showCustomization)}
+          >
+            <span>QR Code Customization</span>
+            <span>{showCustomization ? '▲' : '▼'}</span>
+          </button>
+        ) : (
+          <div className="login-prompt">
+            <p>✨ Want to customize your QR code? <a href="/login">Login</a> to use colors, logos, and text.</p>
+          </div>
+        )}
 
-        {/* Customization section - only shown when showCustomization is true */}
-        {showCustomization && (
+        {/* Customization section – only shown when showCustomization is true */}
+        {showCustomization && user && (
           <div className="customization-section">
+            <div className="coin-notice">
+              ⚡ Customization costs <strong>40 coins</strong>. Your current balance: <strong>{user.coins ?? '—'}</strong>
+            </div>
             <div className="customization-grid">
               <div className="color-picker">
                 <label>QR Code Color</label>
@@ -405,7 +418,7 @@ const QRCodeShortener = () => {
           <span>{showPreview ? '▲' : '▼'}</span>
         </button>
 
-        {/* Preview section - only shown when showPreview is true */}
+        {/* Preview section – only shown when showPreview is true */}
         {showPreview && (
           <div className="preview-section">
             {renderPreview()}

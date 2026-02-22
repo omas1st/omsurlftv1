@@ -2,17 +2,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ReactCountryFlag from 'react-country-flag';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  PieChart,
+  Pie,
   Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
 } from 'recharts';
-import { ComposableMap, Geographies, Geography, Marker } from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { analyticsAPI } from '../../services/api';
+import { getCountryName } from '../../utils/countryUtils';
 import './TopCountriesChart.css';
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json';
@@ -33,12 +32,12 @@ const TopCountriesChart = ({
   customDate,
   isOverall,
 }) => {
-  // Set default view to 'map' instead of 'chart'
   const [viewMode, setViewMode] = useState('map');
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(!external);
   const [noData, setNoData] = useState(false);
   const [topCountry, setTopCountry] = useState(null);
+  const [popupInfo, setPopupInfo] = useState(null); // { country, x, y }
 
   const processData = useCallback((raw) => {
     if (!raw || raw.length === 0) {
@@ -48,11 +47,19 @@ const TopCountriesChart = ({
       return;
     }
 
-    const processed = raw.map((c) => ({
-      country: c.country || c.name || c.label || 'Unknown',
-      countryCode: c.countryCode || c.code || (c.iso2 || null),
-      visitors: safeNum(c.visitors ?? c.count ?? c.value ?? 0),
-    }));
+    const processed = raw.map((c) => {
+      const countryCode = c.countryCode || c.code || c.iso2 || null;
+      const rawName = c.country || c.name || c.label || '';
+
+      // Use enhanced utility to get proper country name
+      const countryName = getCountryName(countryCode, rawName);
+
+      return {
+        country: countryName,
+        countryCode: countryCode,
+        visitors: safeNum(c.visitors ?? c.count ?? c.value ?? 0),
+      };
+    });
 
     const total = processed.reduce((sum, c) => sum + c.visitors, 0);
     processed.forEach((c) => {
@@ -106,26 +113,27 @@ const TopCountriesChart = ({
     if (!external) fetchData();
   }, [fetchData, external]);
 
+  // --- Pie Chart (replaces old BarChart) ---
   const renderChart = () => (
     <ResponsiveContainer width="100%" height={400}>
-      <BarChart
-        data={countries}
-        layout="vertical"
-        margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-        <XAxis type="number" />
-        <YAxis type="category" dataKey="country" width={160} />
-        <Tooltip
-          formatter={(value) => [value, 'Visitors']}
-          labelFormatter={(label) => label}
-        />
-        <Bar dataKey="visitors" name="Visitors">
+      <PieChart>
+        <Pie
+          data={countries}
+          dataKey="visitors"
+          nameKey="country"
+          cx="50%"
+          cy="50%"
+          outerRadius={120}
+          fill="#8884d8"
+          label={({ country, percent }) => `${country} ${(percent * 100).toFixed(0)}%`}
+        >
           {countries.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
-        </Bar>
-      </BarChart>
+        </Pie>
+        <Tooltip formatter={(value) => [value, 'Visitors']} />
+        <Legend />
+      </PieChart>
     </ResponsiveContainer>
   );
 
@@ -167,8 +175,28 @@ const TopCountriesChart = ({
     </div>
   );
 
+  // --- Map with clickable geographies and popup ---
+  const handleGeographyClick = (geo, event) => {
+    // Try to get country name from geography properties
+    const geoName = geo.properties?.name || geo.properties?.NAME || '';
+    if (!geoName) return;
+
+    // Find matching country in our data (case‑insensitive)
+    const matchedCountry = countries.find(
+      (c) => c.country.toLowerCase() === geoName.toLowerCase()
+    );
+    if (!matchedCountry) return;
+
+    // Show popup near click position
+    setPopupInfo({
+      country: matchedCountry,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
   const renderMap = () => (
-    <div className="geo-map-container">
+    <div className="geo-map-container" onClick={() => setPopupInfo(null)}>
       <ComposableMap projectionConfig={{ scale: 147 }} style={{ width: '100%', height: 400 }}>
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
@@ -178,6 +206,10 @@ const TopCountriesChart = ({
                 geography={geo}
                 fill="#EAEAEC"
                 stroke="#D6D6DA"
+                onClick={(event) => {
+                  event.stopPropagation(); // Prevent container click
+                  handleGeographyClick(geo, event);
+                }}
                 style={{
                   default: { outline: 'none' },
                   hover: { fill: '#F53', outline: 'none' },
@@ -187,13 +219,30 @@ const TopCountriesChart = ({
             ))
           }
         </Geographies>
-        {countries.map((c) => (
-          <Marker key={c.countryCode || c.country} coordinates={[0, 0]}>
-            <circle r={Math.max(3, Math.sqrt(c.visitors) / 5)} fill="#F00" stroke="#FFF" strokeWidth={1} />
-          </Marker>
-        ))}
       </ComposableMap>
-      <p className="map-note">Click on a country to zoom (simulated)</p>
+
+      {/* Popup for clicked country */}
+      {popupInfo && (
+        <div
+          className="map-popup"
+          style={{
+            position: 'fixed',
+            left: popupInfo.x + 10,
+            top: popupInfo.y - 40,
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '8px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            zIndex: 1000,
+            pointerEvents: 'none',
+          }}
+        >
+          <strong>{popupInfo.country.country}</strong>
+          <div>Visitors: {popupInfo.country.visitors.toLocaleString()}</div>
+          <div>Percentage: {popupInfo.country.percentage.toFixed(1)}%</div>
+        </div>
+      )}
     </div>
   );
 
