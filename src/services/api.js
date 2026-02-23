@@ -1,4 +1,4 @@
-// src/services/api.js - UPDATED with missing methods for ManageURLs
+// src/services/api.js
 import axios from 'axios';
 
 // Only log in development
@@ -6,6 +6,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 // Log the environment variable for debugging (only in dev)
 if (isDev) {
+  // eslint-disable-next-line no-console
   console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
 }
 
@@ -13,6 +14,7 @@ if (isDev) {
 const getBaseURL = () => {
   const url = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   if (isDev) {
+    // eslint-disable-next-line no-console
     console.log('Using base URL:', url);
   }
   return url;
@@ -28,22 +30,31 @@ const api = axios.create({
 });
 
 // Attach token to default headers if present on load
-const initialToken = localStorage.getItem('token');
+const initialToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 if (initialToken) {
+  // safe-guard headers object
+  api.defaults.headers = api.defaults.headers || {};
+  api.defaults.headers.common = api.defaults.headers.common || {};
   api.defaults.headers.common['Authorization'] = `Bearer ${initialToken}`;
 }
 
 // Request interceptor
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (e) {
+      // ignore localStorage failures
     }
 
     // Avoid crashing if method is undefined in rare cases
     const method = (config.method || '').toUpperCase();
     if (isDev) {
+      // eslint-disable-next-line no-console
       console.log(`API Request: ${method} ${config.baseURL}${config.url}`, config.data);
     }
 
@@ -51,6 +62,7 @@ api.interceptors.request.use(
   },
   (error) => {
     if (isDev) {
+      // eslint-disable-next-line no-console
       console.error('Request error:', error);
     }
     return Promise.reject(error);
@@ -61,12 +73,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     if (isDev) {
+      // eslint-disable-next-line no-console
       console.log(`API Response: ${response.status} ${response.config.url}`, response.data);
     }
     return response;
   },
   async (error) => {
     if (isDev) {
+      // eslint-disable-next-line no-console
       console.error('API Error:', {
         status: error.response?.status,
         url: error.config?.url,
@@ -75,87 +89,107 @@ api.interceptors.response.use(
       });
     }
 
-    const originalRequest = error.config;
+    const originalRequest = error.config || {};
 
     // Handle 429 Too Many Requests
     if (error.response?.status === 429) {
-      const retryAfter = error.response.headers['retry-after'] || 5;
-      const waitTime = parseInt(retryAfter) * 1000;
-      
-      // Store original request for retry
+      const retryAfterHeader = error.response.headers?.['retry-after'];
+      const retryAfter = retryAfterHeader || 5;
+      const waitTime = parseInt(retryAfter, 10) * 1000;
+
       if (!originalRequest._retryCount) {
+        // eslint-disable-next-line no-param-reassign
         originalRequest._retryCount = 0;
       }
-      
+
       if (originalRequest._retryCount < 3) {
-        originalRequest._retryCount++;
-        
-        // Log retry attempt (only in dev)
+        // eslint-disable-next-line no-param-reassign
+        originalRequest._retryCount += 1;
+
         if (isDev) {
+          // eslint-disable-next-line no-console
           console.log(`Rate limited. Retry ${originalRequest._retryCount}/3 after ${waitTime}ms`);
         }
-        
-        // Wait and retry
-        await new Promise(resolve => setTimeout(resolve, waitTime));
+
+        // wait and retry
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
         return api(originalRequest);
-      } else {
-        if (isDev) {
-          console.warn('Maximum retry attempts (3) reached for rate limit');
-        }
-        error.message = 'Too many requests. Please try again later.';
-        return Promise.reject(error);
       }
+
+      if (isDev) {
+        // eslint-disable-next-line no-console
+        console.warn('Maximum retry attempts (3) reached for rate limit');
+      }
+
+      // annotate message and reject
+      error.message = 'Too many requests. Please try again later.';
+      return Promise.reject(error);
     }
 
     // Handle token refresh (only try once)
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
-      // Prevent infinite loops: if no refresh token, do not attempt refresh
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        // No refresh token – just reject
-        return Promise.reject(error);
-      }
-
-      originalRequest._retry = true;
-
       try {
+        const refreshToken = typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null;
+        if (!refreshToken) {
+          return Promise.reject(error);
+        }
+
+        // mark as retrying
+        // eslint-disable-next-line no-param-reassign
+        originalRequest._retry = true;
+
         const refreshUrl = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/auth/refresh`;
 
-        const response = await axios.post(refreshUrl, { refreshToken });
+        const refreshResponse = await axios.post(refreshUrl, { refreshToken });
 
-        const { token, refreshToken: newRefreshToken } = response.data;
+        const refreshedToken = refreshResponse?.data?.token;
+        const newRefreshToken = refreshResponse?.data?.refreshToken;
 
-        if (token) {
-          localStorage.setItem('token', token);
-          if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+        if (refreshedToken) {
+          try {
+            localStorage.setItem('token', refreshedToken);
+            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+          } catch (e) {
+            // ignore localStorage failures
+          }
 
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          api.defaults.headers = api.defaults.headers || {};
+          api.defaults.headers.common = api.defaults.headers.common || {};
+          api.defaults.headers.common['Authorization'] = `Bearer ${refreshedToken}`;
+
           if (originalRequest.headers) {
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+            originalRequest.headers['Authorization'] = `Bearer ${refreshedToken}`;
           } else {
-            originalRequest.headers = { Authorization: `Bearer ${token}` };
+            originalRequest.headers = { Authorization: `Bearer ${refreshedToken}` };
           }
 
           return api(originalRequest);
         }
       } catch (refreshError) {
         // clear tokens and redirect to login
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        delete api.defaults.headers.common['Authorization'];
-
-        // best-effort redirect (client-side app should handle this gracefully)
         try {
-          window.location.href = '/login';
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
         } catch (e) {
-          /* ignore if window not available */
+          // ignore
+        }
+        delete api.defaults.headers?.common?.Authorization;
+
+        try {
+          // best-effort redirect (client-side app should handle this gracefully)
+          // eslint-disable-next-line no-undef
+          if (typeof window !== 'undefined' && window.location) {
+            window.location.href = '/login';
+          }
+        } catch (e) {
+          // ignore if window not available
         }
 
         return Promise.reject(refreshError);
       }
     }
 
-    // Handle network errors
+    // Handle network errors (no response)
     if (!error.response) {
       return Promise.reject({
         message: 'Network error. Please check your connection.',
@@ -188,217 +222,190 @@ api.interceptors.response.use(
   }
 );
 
-// Contact endpoints - NEW SECTION
+// ---------- API groups ---------- //
+
+// Contact endpoints
 export const contactAPI = {
-  sendMessage: (data) => api.post('/contact/send', data),
+  sendMessage: (payload) => api.post('/contact/send', payload),
   getMessages: (params) => api.get('/contact/messages', { params }),
   deleteMessage: (id) => api.delete(`/contact/messages/${id}`),
 };
 
 // Auth endpoints
 export const authAPI = {
-  register: (data) => api.post('/auth/register', data),
-  login: (data) => api.post('/auth/login', data),
-  adminLogin: (data) => api.post('/auth/admin/login', data),
+  register: (payload) => api.post('/auth/register', payload),
+  login: (payload) => api.post('/auth/login', payload),
+  adminLogin: (payload) => api.post('/auth/admin/login', payload),
   logout: () => api.post('/auth/logout'),
-  forgotPassword: (data) => api.post('/auth/forgot-password', data),
-  resetPassword: (data) => api.post('/auth/reset-password', data),
+  forgotPassword: (payload) => api.post('/auth/forgot-password', payload),
+  resetPassword: (payload) => api.post('/auth/reset-password', payload),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   resendVerification: () => api.post('/auth/resend-verification'),
   profile: () => api.get('/auth/profile'),
-  updateProfile: (data) => api.put('/auth/profile', data),
-  changePassword: (data) => api.post('/auth/change-password', data),
+  updateProfile: (payload) => api.put('/auth/profile', payload),
+  changePassword: (payload) => api.post('/auth/change-password', payload),
   deleteAccount: () => api.delete('/auth/account'),
   verifyToken: () => api.get('/auth/verify'),
   refreshToken: () => api.post('/auth/refresh'),
 };
 
-// URL endpoints - CORRECTED function names
+// URL endpoints
 export const urlAPI = {
-  shorten: (data) => api.post('/urls/shorten', data),
-  bulkShorten: (data) => api.post('/urls/bulk', data),
+  shorten: (payload) => api.post('/urls/shorten', payload),
+  bulkShorten: (payload) => api.post('/urls/bulk', payload),
   getAll: (params) => api.get('/urls', { params }),
-  getUrls: (params) => api.get('/urls', { params }), // alias for getAll
-  getUrl: (alias) => api.get(`/urls/${alias}`),
-  getOne: (alias) => api.get(`/urls/${alias}`), // Keep both for compatibility
+  getUrls: (params) => api.get('/urls', { params }), // alias
+  getUrl: (alias) => api.get(`/urls/${encodeURIComponent(alias)}`),
+  getOne: (alias) => api.get(`/urls/${encodeURIComponent(alias)}`),
   getByUser: (userId, params) => api.get(`/urls/user/${userId}`, { params }),
-  update: (id, data) => api.put(`/urls/${id}`, data),
+  update: (id, payload) => api.put(`/urls/${id}`, payload),
   delete: (id) => api.delete(`/urls/${id}`),
-  deleteUrl: (id) => api.delete(`/urls/${id}`), // alias for delete
-  toggleActive: (id, data) => api.patch(`/urls/${id}/active`, data),
-  verifyPassword: (alias, data) => api.post(`/urls/${alias}/verify-password`, data),
-  checkAlias: (alias) => api.get(`/urls/check-alias/${alias}`),
-  getStats: (alias) => api.get(`/urls/${alias}/stats`),
+  deleteUrl: (id) => api.delete(`/urls/${id}`),
+  toggleActive: (id, payload) => api.patch(`/urls/${id}/active`, payload),
+  verifyPassword: (alias, payload) => api.post(`/urls/${encodeURIComponent(alias)}/verify-password`, payload),
+  checkAlias: (alias) => api.get(`/urls/check-alias/${encodeURIComponent(alias)}`),
+  getStats: (alias) => api.get(`/urls/${encodeURIComponent(alias)}/stats`),
   exportData: (params) => api.get('/urls/export', { params, responseType: 'blob' }),
-  redirect: (alias) => api.get(`/urls/redirect/${alias}`),
-  evaluateRules: (alias, data) => api.post(`/urls/${alias}/evaluate-rules`, data),
+  redirect: (alias) => api.get(`/urls/redirect/${encodeURIComponent(alias)}`),
+  evaluateRules: (alias, payload) => api.post(`/urls/${encodeURIComponent(alias)}/evaluate-rules`, payload),
 };
 
-// QR endpoints - UPDATED with aliases and toggleActive
+// QR endpoints
 export const qrAPI = {
-  generate: (data) => api.post('/qr/generate', data),
+  generate: (payload) => api.post('/qr/generate', payload),
   getAll: (params) => api.get('/qr', { params }),
-  getQRCodes: (params) => api.get('/qr', { params }), // alias for getAll
+  getQRCodes: (params) => api.get('/qr', { params }), // alias
   getOne: (id) => api.get(`/qr/${id}`),
-  update: (id, data) => api.put(`/qr/${id}`, data),
+  update: (id, payload) => api.put(`/qr/${id}`, payload),
   delete: (id) => api.delete(`/qr/${id}`),
-  deleteQR: (id) => api.delete(`/qr/${id}`), // alias for delete
   download: (id) => api.get(`/qr/${id}/download`, { responseType: 'blob' }),
-  customize: (id, data) => api.post(`/qr/${id}/customize`, data),
-  toggleActive: (id, data) => api.patch(`/qr/${id}/toggle`, data), // matches route
-  toggleQRActive: (id, data) => api.patch(`/qr/${id}/toggle`, data), // alias
+  customize: (id, payload) => api.post(`/qr/${id}/customize`, payload),
+  toggleActive: (id, payload) => api.patch(`/qr/${id}/toggle`, payload),
 };
 
-// Text endpoints - UPDATED with aliases and toggleActive
+// Text endpoints
 export const textAPI = {
-  create: (data) => api.post('/text', data),
+  create: (payload) => api.post('/text', payload),
   getAll: (params) => api.get('/text', { params }),
-  getTextPages: (params) => api.get('/text', { params }), // alias for getAll
-  getOne: (alias) => api.get(`/text/${alias}`),
-  update: (id, data) => api.put(`/text/${id}`, data),
+  getTextPages: (params) => api.get('/text', { params }), // alias
+  getOne: (alias) => api.get(`/text/${encodeURIComponent(alias)}`),
+  update: (id, payload) => api.put(`/text/${id}`, payload),
   delete: (id) => api.delete(`/text/${id}`),
-  deleteTextPage: (id) => api.delete(`/text/${id}`), // alias for delete
-  addReply: (id, data) => api.post(`/text/${id}/replies`, data),
+  deleteTextPage: (id) => api.delete(`/text/${id}`),
+  addReply: (id, payload) => api.post(`/text/${id}/replies`, payload),
   getReplies: (id, params) => api.get(`/text/${id}/replies`, { params }),
   deleteReply: (id, replyId) => api.delete(`/text/${id}/replies/${replyId}`),
-  toggleReply: (id, data) => api.patch(`/text/${id}/reply-toggle`, data),
-  customize: (id, data) => api.post(`/text/${id}/customize`, data),
-  toggleActive: (id, data) => api.patch(`/text/${id}/active`, data), // you need to add this route on backend
+  toggleReply: (id, payload) => api.patch(`/text/${id}/reply-toggle`, payload),
+  customize: (id, payload) => api.post(`/text/${id}/customize`, payload),
+  toggleActive: (id, payload) => api.patch(`/text/${id}/active`, payload),
 };
 
-// Analytics endpoints
+// Analytics endpoints - ensure params are forwarded and aliases encoded
 export const analyticsAPI = {
-  overall: (params) => api.get('/analytics/overall', { params }),
-  getOverall: (params) => api.get('/analytics/overall', { params }),
-  url: (alias, params) => api.get(`/analytics/${alias}`, { params }),
-  urlPublic: (alias) => api.get(`/analytics/${alias}/public`),
-  timeseries: (alias, params) => api.get(`/analytics/${alias}/timeseries`, { params }),
-  countries: (alias, params) => api.get(`/analytics/${alias}/countries`, { params }),
-  devices: (alias, params) => api.get(`/analytics/${alias}/devices`, { params }),
-  referrers: (alias, params) => api.get(`/analytics/${alias}/referrers`, { params }),
-  browsers: (alias, params) => api.get(`/analytics/${alias}/browsers`, { params }),
-  os: (alias, params) => api.get(`/analytics/${alias}/os`, { params }),
-  realtime: (alias) => api.get(`/analytics/${alias}/realtime`),
-  click: (alias, data) => api.post(`/analytics/${alias}/click`, data),
-  qrscan: (alias, data) => api.post(`/analytics/${alias}/qrscan`, data),
-  textview: (alias, data) => api.post(`/analytics/${alias}/textview`, data),
-  export: (alias, params) => api.get(`/analytics/${alias}/export`, { params, responseType: 'blob' }),
-  heatmap: (alias, params) => api.get(`/analytics/${alias}/heatmap`, { params }),
-  engagement: (alias, params) => api.get(`/analytics/${alias}/engagement`, { params }),
-  conversions: (alias, params) => api.get(`/analytics/${alias}/conversions`, { params }),
-  social: (alias, params) => api.get(`/analytics/${alias}/social`, { params }),
-  events: (alias, params) => api.get(`/analytics/${alias}/events`, { params }),
-  event: (alias, data) => api.post(`/analytics/${alias}/event`, data),
-  abtest: (alias, testId) => api.get(`/analytics/${alias}/abtest/${testId}`),
-  funnel: (alias, funnelId) => api.get(`/analytics/${alias}/funnel/${funnelId}`),
-  cohort: (alias, params) => api.get(`/analytics/${alias}/cohort`, { params }),
-  retention: (alias, params) => api.get(`/analytics/${alias}/retention`, { params }),
-  revenue: (alias, params) => api.get(`/analytics/${alias}/revenue`, { params }),
-  
-  // ----- NEW METHODS FOR 10-SECTION PAGE -----
-  // Hourly data for 24h chart
-  hourly: (alias, params) => api.get(`/analytics/${alias}/hourly`, { params }),
-  // Minute‑level drill‑down for a specific hour
-  hourlyMinute: (alias, params) => api.get(`/analytics/${alias}/hourly/minute`, { params }),
-  // Language distribution
-  languages: (alias, params) => api.get(`/analytics/${alias}/languages`, { params }),
-  // Recent visitors (last 10)
-  recentVisitors: (alias, params) => api.get(`/analytics/${alias}/recent`, { params }),
-  // Sankey / flow network data
-  sankey: (alias, params) => api.get(`/analytics/${alias}/sankey`, { params }),
-  // (Optional) export report generation
-  exportReport: (data) => api.post('/analytics/export', data, { responseType: 'blob' }),
+  overall: (params = {}) => api.get('/analytics/overall', { params }),
+  getOverall: (params = {}) => api.get('/analytics/overall', { params }),
+  url: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}`, { params }),
+  urlPublic: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/public`, { params }),
+  timeseries: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/timeseries`, { params }),
+  countries: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/countries`, { params }),
+  devices: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/devices`, { params }),
+  referrers: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/referrers`, { params }),
+  browsers: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/browsers`, { params }),
+  os: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/os`, { params }),
+  realtime: (alias) => api.get(`/analytics/${encodeURIComponent(alias)}/realtime`),
+  click: (alias, payload) => api.post(`/analytics/${encodeURIComponent(alias)}/click`, payload),
+  qrscan: (alias, payload) => api.post(`/analytics/${encodeURIComponent(alias)}/qrscan`, payload),
+  textview: (alias, payload) => api.post(`/analytics/${encodeURIComponent(alias)}/textview`, payload),
+  export: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/export`, { params, responseType: 'blob' }),
+  heatmap: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/heatmap`, { params }),
+  engagement: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/engagement`, { params }),
+  conversions: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/conversions`, { params }),
+  social: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/social`, { params }),
+  events: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/events`, { params }),
+  event: (alias, payload) => api.post(`/analytics/${encodeURIComponent(alias)}/event`, payload),
+  abtest: (alias, testId) => api.get(`/analytics/${encodeURIComponent(alias)}/abtest/${encodeURIComponent(testId)}`),
+  funnel: (alias, funnelId, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/funnel/${encodeURIComponent(funnelId)}`, { params }),
+  cohort: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/cohort`, { params }),
+  retention: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/retention`, { params }),
+  revenue: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/revenue`, { params }),
+  hourly: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/hourly`, { params }),
+  hourlyMinute: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/hourly/minute`, { params }),
+  languages: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/languages`, { params }),
+  recentVisitors: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/recent`, { params }),
+  sankey: (alias, params = {}) => api.get(`/analytics/${encodeURIComponent(alias)}/sankey`, { params }),
+  exportReport: (payload) => api.post('/analytics/export', payload, { responseType: 'blob' }),
 };
 
-// Coin endpoints
+// Coins endpoints
 export const coinsAPI = {
   balance: () => api.get('/coins/balance'),
-  history: (params) => api.get('/coins/history', { params }),
-  earn: (data) => api.post('/coins/earn', data),
-  spend: (data) => api.post('/coins/spend', data),
-  transfer: (data) => api.post('/coins/transfer', data),
+  history: (params = {}) => api.get('/coins/history', { params }),
+  earn: (payload) => api.post('/coins/earn', payload),
+  spend: (payload) => api.post('/coins/spend', payload),
+  transfer: (payload) => api.post('/coins/transfer', payload),
   rewards: () => api.get('/coins/rewards'),
-  redeem: (data) => api.post('/coins/redeem', data),
+  redeem: (payload) => api.post('/coins/redeem', payload),
   referral: () => api.get('/coins/referral'),
   generateReferral: () => api.post('/coins/referral/generate'),
   referralStats: () => api.get('/coins/referral/stats'),
-  claimReferral: (data) => api.post('/coins/referral/claim', data),
+  claimReferral: (payload) => api.post('/coins/referral/claim', payload),
   dailyTasks: () => api.get('/coins/tasks/daily'),
-  completeTask: (data) => api.post('/coins/tasks/complete', data),
+  completeTask: (payload) => api.post('/coins/tasks/complete', payload),
   achievements: () => api.get('/coins/achievements'),
-  claimAchievement: (data) => api.post('/coins/achievements/claim', data),
+  claimAchievement: (payload) => api.post('/coins/achievements/claim', payload),
   premiumPlans: () => api.get('/coins/premium/plans'),
-  subscribePremium: (data) => api.post('/coins/premium/subscribe', data),
+  subscribePremium: (payload) => api.post('/coins/premium/subscribe', payload),
   currentSubscription: () => api.get('/coins/premium/subscription'),
   cancelSubscription: () => api.post('/coins/premium/cancel'),
   packages: () => api.get('/coins/packages'),
-  purchase: (data) => api.post('/coins/purchase', data),
-  verifyPayment: (data) => api.post('/coins/verify-payment', data),
+  purchase: (payload) => api.post('/coins/purchase', payload),
+  verifyPayment: (payload) => api.post('/coins/verify-payment', payload),
   transaction: (id) => api.get(`/coins/transaction/${id}`),
-  leaderboard: (params) => api.get('/coins/leaderboard', { params }),
+  leaderboard: (params = {}) => api.get('/coins/leaderboard', { params }),
   value: () => api.get('/coins/value'),
 };
 
 // Admin endpoints
 export const adminAPI = {
-  // User management
-  users: (params) => api.get('/admin/users', { params }),
+  users: (params = {}) => api.get('/admin/users', { params }),
   user: (id) => api.get(`/admin/users/${id}`),
-  updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
+  updateUser: (id, payload) => api.put(`/admin/users/${id}`, payload),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
-  restrictUser: (id, data) => api.post(`/admin/users/${id}/restrict`, data),
+  restrictUser: (id, payload) => api.post(`/admin/users/${id}/restrict`, payload),
   unrestrictUser: (id) => api.post(`/admin/users/${id}/unrestrict`),
-
-  // URL management
-  allUrls: (params) => api.get('/admin/urls', { params }),
+  allUrls: (params = {}) => api.get('/admin/urls', { params }),
   url: (id) => api.get(`/admin/urls/${id}`),
-  restrictUrl: (id, data) => api.post(`/admin/urls/${id}/restrict`, data),
+  restrictUrl: (id, payload) => api.post(`/admin/urls/${id}/restrict`, payload),
   unrestrictUrl: (id) => api.post(`/admin/urls/${id}/unrestrict`),
-
-  // Contact messages management - NEW
-  contactMessages: (params) => api.get('/admin/contact-messages', { params }),
+  contactMessages: (params = {}) => api.get('/admin/contact-messages', { params }),
   contactMessage: (id) => api.get(`/admin/contact-messages/${id}`),
   deleteContactMessage: (id) => api.delete(`/admin/contact-messages/${id}`),
-  replyToContact: (id, data) => api.post(`/admin/contact-messages/${id}/reply`, data),
-
-  // Analytics
+  replyToContact: (id, payload) => api.post(`/admin/contact-messages/${id}/reply`, payload),
   adminStats: () => api.get('/admin/stats'),
   systemHealth: () => api.get('/admin/health'),
   serverInfo: () => api.get('/admin/server-info'),
-
-  // Settings
   settings: () => api.get('/admin/settings'),
-  updateSettings: (data) => api.put('/admin/settings', data),
-
-  // Logs
-  logs: (params) => api.get('/admin/logs', { params }),
+  updateSettings: (payload) => api.put('/admin/settings', payload),
+  logs: (params = {}) => api.get('/admin/logs', { params }),
   clearLogs: () => api.delete('/admin/logs'),
-
-  // Backup
   backup: () => api.get('/admin/backup', { responseType: 'blob' }),
-  restore: (data) => api.post('/admin/restore', data),
-
-  // Email
-  sendEmail: (data) => api.post('/admin/email', data),
+  restore: (payload) => api.post('/admin/restore', payload),
+  sendEmail: (payload) => api.post('/admin/email', payload),
   emailTemplates: () => api.get('/admin/email-templates'),
-  updateEmailTemplate: (id, data) => api.put(`/admin/email-templates/${id}`, data),
-
-  // Reports
-  generateReport: (data) => api.post('/admin/reports', data),
-  reports: (params) => api.get('/admin/reports', { params }),
+  updateEmailTemplate: (id, payload) => api.put(`/admin/email-templates/${id}`, payload),
+  generateReport: (payload) => api.post('/admin/reports', payload),
+  reports: (params = {}) => api.get('/admin/reports', { params }),
   report: (id) => api.get(`/admin/reports/${id}`),
-
-  // System
   clearCache: () => api.post('/admin/clear-cache'),
-  maintenanceMode: (data) => api.post('/admin/maintenance', data),
+  maintenanceMode: (payload) => api.post('/admin/maintenance', payload),
   updateSystem: () => api.post('/admin/update-system'),
 };
 
 // Cloudinary endpoints
 export const cloudinaryAPI = {
-  signature: (data) => api.post('/cloudinary/signature', data),
-  upload: (data) => api.post('/cloudinary/upload', data),
-  delete: (data) => api.post('/cloudinary/delete', data),
+  signature: (payload) => api.post('/cloudinary/signature', payload),
+  upload: (payload) => api.post('/cloudinary/upload', payload),
+  delete: (payload) => api.post('/cloudinary/delete', payload),
 };
 
 // Socket endpoints
@@ -411,7 +418,7 @@ export const socketAPI = {
 // Export the axios instance
 export { api };
 
-// Create a simple default export
+// Create a simple default export object bundling groups
 const apiService = {
   api,
   auth: authAPI,

@@ -1,6 +1,6 @@
 // src/pages/AnalyticsPage/AnalyticsPage.jsx
-import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../context/AuthContext';
 import { analyticsAPI, urlAPI } from '../../services/api';
@@ -17,11 +17,25 @@ import ExportModal from '../../components/Analytics/ExportModal';
 import './AnalyticsPage.css';
 
 const AnalyticsPage = () => {
-  const { alias } = useParams();
+  const routeParams = useParams(); // may contain alias if route is /:alias/analytics
+  const location = useLocation(); // read querystring such as ?alias=xxx or ?url=xxx
   const navigate = useNavigate();
   const { isAuthenticated } = useContext(AuthContext);
 
-  const [selectedUrl, setSelectedUrl] = useState(alias || 'overall');
+  // Try to determine an alias from:
+  // 1) route param (routeParams.alias)
+  // 2) querystring alias/url/q
+  const getAliasFromLocation = () => {
+    const qs = new URLSearchParams(location.search);
+    return qs.get('alias') || qs.get('url') || qs.get('q') || null;
+  };
+
+  const initialAlias = routeParams.alias || getAliasFromLocation() || 'overall';
+
+  // track whether the user manually picked a url from selector (so we don't overwrite)
+  const userPickedRef = useRef(false);
+
+  const [selectedUrl, setSelectedUrl] = useState(initialAlias);
   const [timeRange, setTimeRange] = useState('overall');
   const [localTime, setLocalTime] = useState('utc');
   const [customDate, setCustomDate] = useState({ from: '', to: '' });
@@ -35,6 +49,7 @@ const AnalyticsPage = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
+  // Keep getDateParams identical to what controller expects
   const getDateParams = useCallback(() => {
     const params = { timeframe: timeRange, timezone: localTime };
     if (timeRange === 'custom' && customDate.from && customDate.to) {
@@ -49,18 +64,42 @@ const AnalyticsPage = () => {
       const response = await urlAPI.getUrls({ limit: 100 });
       const urls = response.data?.data?.urls || response.data?.urls || [];
       setUserUrls(urls);
-    } catch (error) {
-      console.error('Error fetching user URLs:', error);
+    } catch (err) {
+      console.error('Error fetching user URLs:', err);
     }
   }, []);
 
+  // Main fetch function — always include date params for per-URL calls
   const fetchAggregatedData = useCallback(async () => {
     setLoading(true);
     setError(null);
     setIsPrivate(false);
 
     try {
+      // If custom is selected but both dates are not yet provided, do nothing (keep previous data)
+      if (timeRange === 'custom') {
+        if (!customDate.from || !customDate.to) {
+          setLoading(false);
+          return;
+        }
+        const fromDate = new Date(customDate.from);
+        const toDate = new Date(customDate.to);
+        if (isNaN(fromDate.getTime()) || isNaN(toDate.getTime())) {
+          setError('Invalid custom date(s)');
+          setLoading(false);
+          return;
+        }
+        if (fromDate > toDate) {
+          setError('"From" date must be before or equal to "To" date');
+          setLoading(false);
+          return;
+        }
+      }
+
       const params = getDateParams();
+
+      // debug log (remove in production)
+      // console.debug('[AnalyticsPage] fetchAggregatedData', { selectedUrl, params, isAuthenticated });
 
       if (selectedUrl === 'overall') {
         if (!isAuthenticated) {
@@ -69,59 +108,104 @@ const AnalyticsPage = () => {
           return;
         }
         const response = await analyticsAPI.overall(params);
-        setFullData(response.data?.data || response.data);
+        setFullData(response?.data?.data || response?.data || response);
       } else {
+        // Always include params for per-URL calls
         let response;
-        try {
-          response = await analyticsAPI.urlPublic(selectedUrl);
-        } catch (err) {
-          if (err.response?.status === 403) {
-            if (isAuthenticated) {
-              response = await analyticsAPI.url(selectedUrl, params);
+        if (isAuthenticated) {
+          // Try protected endpoint first (owner)
+          try {
+            response = await analyticsAPI.url(selectedUrl, params);
+          } catch (err) {
+            // If protected endpoint forbids, try public endpoint with same params
+            if (err?.response?.status === 403) {
+              try {
+                response = await analyticsAPI.urlPublic(selectedUrl, params);
+              } catch (pubErr) {
+                if (pubErr?.response?.status === 403) {
+                  setIsPrivate(true);
+                  setLoading(false);
+                  return;
+                }
+                throw pubErr;
+              }
             } else {
+              throw err;
+            }
+          }
+        } else {
+          // Public user -> public endpoint (must pass params)
+          try {
+            response = await analyticsAPI.urlPublic(selectedUrl, params);
+          } catch (err) {
+            if (err?.response?.status === 403) {
               setIsPrivate(true);
               setLoading(false);
               return;
             }
-          } else {
             throw err;
           }
         }
-        setFullData(response.data?.data || response.data);
-        const urlResp = await urlAPI.getUrl(selectedUrl);
-        setUrlInfo(urlResp.data?.data?.url || urlResp.data?.url);
+
+        setFullData(response?.data?.data || response?.data || response);
+
+        // fetch url info (no time params required) — optional best-effort
+        try {
+          const urlResp = await urlAPI.getUrl(selectedUrl);
+          setUrlInfo(urlResp.data?.data?.url || urlResp.data?.url || urlResp.data);
+        } catch (uErr) {
+          // not critical — just warn
+          console.warn('Failed to fetch url info:', uErr);
+          setUrlInfo(null);
+        }
       }
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-      if (error.response?.status === 404) {
+    } catch (err) {
+      console.error('Error fetching analytics:', err);
+      if (err?.response?.status === 404) {
         setError('URL not found');
-      } else if (error.response?.status === 403) {
+      } else if (err?.response?.status === 403) {
         setIsPrivate(true);
       } else {
-        setError(error.response?.data?.message || 'Failed to fetch analytics data');
+        setError(err?.response?.data?.message || 'Failed to fetch analytics data');
       }
     } finally {
       setLoading(false);
     }
-  }, [selectedUrl, getDateParams, isAuthenticated]);
+  }, [selectedUrl, getDateParams, isAuthenticated, timeRange, customDate]);
 
+  // If route param or querystring alias changes (external navigation / direct link),
+  // update selectedUrl only when user hasn't manually picked another url.
+  useEffect(() => {
+    const aliasFromRoute = routeParams.alias || getAliasFromLocation() || null;
+    if (aliasFromRoute && !userPickedRef.current) {
+      setSelectedUrl(aliasFromRoute);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeParams.alias, location.search]);
+
+  // Fetch URLs for user (if logged in)
   useEffect(() => {
     if (isAuthenticated) fetchUserUrls();
   }, [isAuthenticated, fetchUserUrls]);
 
+  // Fetch analytics when inputs change
   useEffect(() => {
     fetchAggregatedData();
   }, [fetchAggregatedData]);
 
-  const handleTimeRangeChange = (range) => {
-    setTimeRange(range);
-    if (range !== 'custom') setCustomDate({ from: '', to: '' });
+  // Handler when user selects a url from dropdown
+  const handleUrlChange = (urlAlias) => {
+    userPickedRef.current = true; // mark user interaction
+    setSelectedUrl(urlAlias);
+    // Navigate only when user explicitly picks a URL (do not navigate when setting initial state)
+    if (urlAlias === 'overall') navigate('/analytics');
+    else navigate(`/${encodeURIComponent(urlAlias)}/analytics`);
   };
 
-  const handleUrlChange = (urlAlias) => {
-    setSelectedUrl(urlAlias);
-    if (urlAlias === 'overall') navigate('/analytics');
-    else navigate(`/${urlAlias}/analytics`);
+  const handleTimeRangeChange = (range) => {
+    setError(null);
+    setTimeRange(range);
+    if (range !== 'custom') setCustomDate({ from: '', to: '' });
   };
 
   const getTimeRangeLabel = () => {
@@ -139,6 +223,7 @@ const AnalyticsPage = () => {
     return map[timeRange] || timeRange;
   };
 
+  // UI states
   if (loading) {
     return (
       <div className="analytics-loading">
@@ -198,9 +283,7 @@ const AnalyticsPage = () => {
     <div className="analytics-page">
       <Helmet>
         <title>
-          {selectedUrl === 'overall'
-            ? 'Overall Analytics'
-            : `Analytics for /${selectedUrl}`} | OmsUrl
+          {selectedUrl === 'overall' ? 'Overall Analytics' : `Analytics for /${selectedUrl}`} | OmsUrl
         </title>
       </Helmet>
 
@@ -259,6 +342,7 @@ const AnalyticsPage = () => {
                   Custom
                 </button>
               </div>
+
               {timeRange === 'custom' && (
                 <div className="custom-date-selector">
                   <div className="date-input-group">

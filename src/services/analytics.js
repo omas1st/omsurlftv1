@@ -3,7 +3,8 @@ import api from './api';
 import socketService from './socket';
 
 const analyticsService = {
-  // Get overall analytics
+  // Get overall analytics (requires auth)
+  // params: { timeframe, from, to, timezone, ... }
   getOverall: async (params = {}) => {
     try {
       const response = await api.get('/analytics/overall', { params });
@@ -19,10 +20,28 @@ const analyticsService = {
     }
   },
 
-  // Get URL-specific analytics
+  // Public URL analytics (no auth) - uses /:alias/public
+  // params: { timeframe, from, to, timezone, ... }
+  getPublicUrlAnalytics: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/public`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch public URL analytics'
+      };
+    }
+  },
+
+  // Authenticated URL analytics (protected)
+  // params: { timeframe, from, to, timezone, ... }
   getUrlAnalytics: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}`, { params });
       return {
         success: true,
         data: response.data
@@ -36,9 +55,10 @@ const analyticsService = {
   },
 
   // Get time series data
+  // params: { timeframe, from, to, timezone, start, end, ... }
   getTimeSeries: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/timeseries`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/timeseries`, { params });
       return {
         success: true,
         data: response.data
@@ -52,9 +72,10 @@ const analyticsService = {
   },
 
   // Get countries data
+  // params: { timeframe, from, to, timezone, limit, ... }
   getCountries: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/countries`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/countries`, { params });
       return {
         success: true,
         data: response.data
@@ -70,7 +91,7 @@ const analyticsService = {
   // Get devices data
   getDevices: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/devices`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/devices`, { params });
       return {
         success: true,
         data: response.data
@@ -86,7 +107,7 @@ const analyticsService = {
   // Get referrers data
   getReferrers: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/referrers`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/referrers`, { params });
       return {
         success: true,
         data: response.data
@@ -102,7 +123,7 @@ const analyticsService = {
   // Get browsers data
   getBrowsers: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/browsers`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/browsers`, { params });
       return {
         success: true,
         data: response.data
@@ -118,7 +139,7 @@ const analyticsService = {
   // Get operating systems data
   getOS: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/os`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/os`, { params });
       return {
         success: true,
         data: response.data
@@ -131,10 +152,90 @@ const analyticsService = {
     }
   },
 
+  // Get hourly distribution
+  getHourly: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/hourly`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch hourly data'
+      };
+    }
+  },
+
+  // Hourly minute breakdown (placeholder)
+  getHourlyMinute: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/hourly/minute`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch hourly minute data'
+      };
+    }
+  },
+
+  // Get languages data
+  getLanguages: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/languages`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch language data'
+      };
+    }
+  },
+
+  // Get recent visitors
+  getRecent: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/recent`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch recent visitors'
+      };
+    }
+  },
+
+  // Sankey / routing data
+  getSankey: async (alias, params = {}) => {
+    try {
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/sankey`, { params });
+      return {
+        success: true,
+        data: response.data
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch sankey data'
+      };
+    }
+  },
+
   // Get real-time analytics
   getRealtime: async (alias) => {
     try {
-      const response = await api.get(`/analytics/${alias}/realtime`);
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/realtime`);
       return {
         success: true,
         data: response.data
@@ -150,7 +251,7 @@ const analyticsService = {
   // Track click
   trackClick: async (alias, data = {}) => {
     try {
-      const response = await api.post(`/analytics/${alias}/click`, data);
+      const response = await api.post(`/analytics/${encodeURIComponent(alias)}/click`, data);
       return {
         success: true,
         data: response.data
@@ -166,7 +267,7 @@ const analyticsService = {
   // Track QR scan
   trackQRScan: async (alias, data = {}) => {
     try {
-      const response = await api.post(`/analytics/${alias}/qrscan`, data);
+      const response = await api.post(`/analytics/${encodeURIComponent(alias)}/qrscan`, data);
       return {
         success: true,
         data: response.data
@@ -182,7 +283,7 @@ const analyticsService = {
   // Track text view
   trackTextView: async (alias, data = {}) => {
     try {
-      const response = await api.post(`/analytics/${alias}/textview`, data);
+      const response = await api.post(`/analytics/${encodeURIComponent(alias)}/textview`, data);
       return {
         success: true,
         data: response.data
@@ -195,26 +296,34 @@ const analyticsService = {
     }
   },
 
-  // Export analytics data
+  // Export analytics data (supports timeframe/from/to/timezone & format)
   exportData: async (alias, format = 'csv', params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/export`, {
-        params: { ...params, format },
-        responseType: 'blob'
+      const mergedParams = { ...params, format };
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/export`, {
+        params: mergedParams,
+        responseType: format === 'csv' ? 'blob' : undefined
       });
-      
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `analytics-${alias}.${format}`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      
+
+      if (format === 'csv') {
+        // Create download link
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `analytics-${alias}.${format}`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        return {
+          success: true,
+          message: 'Export successful'
+        };
+      }
+
       return {
         success: true,
-        message: 'Export successful'
+        data: response.data
       };
     } catch (error) {
       return {
@@ -234,10 +343,10 @@ const analyticsService = {
     socketService.unsubscribeFromAnalytics(alias, callback);
   },
 
-  // Get heatmap data
+  // Heatmap
   getHeatmap: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/heatmap`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/heatmap`, { params });
       return {
         success: true,
         data: response.data
@@ -250,10 +359,10 @@ const analyticsService = {
     }
   },
 
-  // Get engagement data
+  // Engagement
   getEngagement: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/engagement`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/engagement`, { params });
       return {
         success: true,
         data: response.data
@@ -266,10 +375,10 @@ const analyticsService = {
     }
   },
 
-  // Get conversion data
+  // Conversions
   getConversions: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/conversions`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/conversions`, { params });
       return {
         success: true,
         data: response.data
@@ -282,10 +391,10 @@ const analyticsService = {
     }
   },
 
-  // Get social shares
+  // Social shares
   getSocialShares: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/social`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/social`, { params });
       return {
         success: true,
         data: response.data
@@ -298,10 +407,10 @@ const analyticsService = {
     }
   },
 
-  // Get custom events
+  // Custom events
   getCustomEvents: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/events`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/events`, { params });
       return {
         success: true,
         data: response.data
@@ -317,7 +426,7 @@ const analyticsService = {
   // Track custom event
   trackEvent: async (alias, eventName, data = {}) => {
     try {
-      const response = await api.post(`/analytics/${alias}/event`, {
+      const response = await api.post(`/analytics/${encodeURIComponent(alias)}/event`, {
         event: eventName,
         ...data
       });
@@ -333,10 +442,10 @@ const analyticsService = {
     }
   },
 
-  // Get A/B test results
+  // A/B test results
   getABTestResults: async (alias, testId) => {
     try {
-      const response = await api.get(`/analytics/${alias}/abtest/${testId}`);
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/abtest/${encodeURIComponent(testId)}`);
       return {
         success: true,
         data: response.data
@@ -349,10 +458,10 @@ const analyticsService = {
     }
   },
 
-  // Get funnel data
-  getFunnelData: async (alias, funnelId) => {
+  // Funnels
+  getFunnelData: async (alias, funnelId, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/funnel/${funnelId}`);
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/funnel/${encodeURIComponent(funnelId)}`, { params });
       return {
         success: true,
         data: response.data
@@ -365,10 +474,10 @@ const analyticsService = {
     }
   },
 
-  // Get cohort analysis
+  // Cohort analysis
   getCohortAnalysis: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/cohort`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/cohort`, { params });
       return {
         success: true,
         data: response.data
@@ -381,10 +490,10 @@ const analyticsService = {
     }
   },
 
-  // Get retention data
+  // Retention
   getRetentionData: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/retention`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/retention`, { params });
       return {
         success: true,
         data: response.data
@@ -397,10 +506,10 @@ const analyticsService = {
     }
   },
 
-  // Get revenue data (premium feature)
+  // Revenue
   getRevenueData: async (alias, params = {}) => {
     try {
-      const response = await api.get(`/analytics/${alias}/revenue`, { params });
+      const response = await api.get(`/analytics/${encodeURIComponent(alias)}/revenue`, { params });
       return {
         success: true,
         data: response.data
