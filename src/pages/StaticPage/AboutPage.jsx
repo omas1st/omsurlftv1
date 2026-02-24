@@ -10,7 +10,7 @@ const AboutPage = () => {
         <header className="about-header">
           <h1>About OmsUrl</h1>
           <p className="lead">
-            OmsUrl is a lightweight, privacy-first URL shortening service built by Omslabs.
+            OmsUrl is an advanced URL shortener that lets you shorten links, generate QR codes, and create chat links in seconds. Built with powerful features, analytics, and customization tools to help you share smarter and grow faster, built by Omslabs.
             Our goal is to give individuals and teams a fast, reliable way to shorten links,
             share them, and measure performance with actionable analytics.
           </p>
