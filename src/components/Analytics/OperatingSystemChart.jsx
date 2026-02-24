@@ -1,10 +1,21 @@
-// src/components/Analytics/OperatingSystemChart.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { analyticsAPI } from '../../services/api';
 import './OperatingSystemChart.css';
 
 const OS_CATEGORIES = ['Windows', 'macOS', 'Linux', 'ChromeOS', 'iOS', 'Android', 'iPadOS', 'Other'];
+
+// Consistent colors for each OS category
+const COLORS = {
+  Windows: '#2563eb',    // primary blue
+  macOS: '#9ca3af',      // gray
+  Linux: '#f59e0b',      // amber
+  ChromeOS: '#34d399',   // green
+  iOS: '#000000',        // black
+  Android: '#10b981',    // emerald
+  iPadOS: '#8b5cf6',     // violet
+  Other: '#6b7280'       // muted gray
+};
 
 const OperatingSystemChart = ({
   data: externalData,
@@ -41,7 +52,7 @@ const OperatingSystemChart = ({
       osCounts[category] = (osCounts[category] || 0) + visitors;
     });
 
-    const chartData = OS_CATEGORIES.map((cat) => ({ name: cat, visitors: osCounts[cat] || 0 })).filter((d) => d.visitors > 0);
+    const chartData = OS_CATEGORIES.map((cat) => ({ name: cat, value: osCounts[cat] || 0 })).filter((d) => d.value > 0);
     if (chartData.length === 0) {
       setNoData(true);
       setData([]);
@@ -97,14 +108,24 @@ const OperatingSystemChart = ({
   return (
     <div className="os-chart">
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={data} layout="vertical" margin={{ top: 20, right: 30, left: 100, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-          <XAxis type="number" />
-          <YAxis type="category" dataKey="name" width={100} />
-          <Tooltip />
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            outerRadius={130}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[entry.name] || COLORS.Other} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => value.toLocaleString()} />
           <Legend />
-          <Bar dataKey="visitors" fill="#8884d8" />
-        </BarChart>
+        </PieChart>
       </ResponsiveContainer>
     </div>
   );

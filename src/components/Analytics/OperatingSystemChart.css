@@ -68,23 +68,22 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
 }
 
 /* Chart responsiveness */
 .os-chart .recharts-responsive-container {
   width: 100% !important;
   height: auto !important;
-  min-height: 300px;
+  min-height: 350px;
 }
 
-/* Chart text styling */
-.recharts-text {
+/* Pie chart labels */
+.recharts-pie-label-text {
   font-size: var(--font-size-xs);
-  fill: var(--text-secondary);
-}
-
-.recharts-cartesian-grid line {
-  stroke: var(--border-light);
+  fill: var(--text-primary);
+  font-weight: 500;
 }
 
 .recharts-tooltip-label {
@@ -107,10 +106,9 @@
   color: var(--text-primary) !important;
 }
 
-/* Y-axis label (OS names) */
-.recharts-yAxis .recharts-text {
-  font-size: var(--font-size-xs);
-  fill: var(--text-primary);
+/* Legend icon (colored squares) */
+.recharts-legend-icon {
+  margin-right: var(--spacing-xs);
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
@@ -120,10 +118,10 @@
   }
 
   .os-chart .recharts-responsive-container {
-    min-height: 250px;
+    min-height: 280px;
   }
 
-  .recharts-text {
+  .recharts-pie-label-text {
     font-size: 0.7rem;
   }
 

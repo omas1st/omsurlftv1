@@ -32,12 +32,14 @@ const TopCountriesChart = ({
   customDate,
   isOverall,
 }) => {
-  const [viewMode, setViewMode] = useState('map');
+  // Default view mode set to 'table'
+  const [viewMode, setViewMode] = useState('table');
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(!external);
   const [noData, setNoData] = useState(false);
   const [topCountry, setTopCountry] = useState(null);
   const [popupInfo, setPopupInfo] = useState(null); // { country, x, y }
+  const [hoverInfo, setHoverInfo] = useState(null);   // { country, x, y }
 
   const processData = useCallback((raw) => {
     if (!raw || raw.length === 0) {
@@ -113,7 +115,24 @@ const TopCountriesChart = ({
     if (!external) fetchData();
   }, [fetchData, external]);
 
-  // --- Pie Chart (replaces old BarChart) ---
+  // --- Helper for choropleth colours ---
+  const getMapFill = (geoName) => {
+    if (!countries.length) return '#EEE';
+    const matched = countries.find(
+      (c) => c.country.toLowerCase() === geoName.toLowerCase()
+    );
+    if (!matched) return '#EEE'; // no data for this country
+
+    const maxVisitors = countries[0].visitors; // top country has most
+    const intensity = maxVisitors > 0 ? matched.visitors / maxVisitors : 0;
+    // Interpolate between light blue (#e6f0ff) and dark blue (#0033cc)
+    const r = Math.round(0x66 + (0x00 - 0x66) * intensity);   // 0x66 → 0x00
+    const g = Math.round(0xCC + (0x33 - 0xCC) * intensity);   // 0xCC → 0x33
+    const b = Math.round(0xFF + (0xCC - 0xFF) * intensity);   // 0xFF → 0xCC
+    return `rgb(${r}, ${g}, ${b})`;
+  };
+
+  // --- Pie Chart ---
   const renderChart = () => (
     <ResponsiveContainer width="100%" height={400}>
       <PieChart>
@@ -175,24 +194,41 @@ const TopCountriesChart = ({
     </div>
   );
 
-  // --- Map with clickable geographies and popup ---
+  // --- Map with choropleth, hover tooltip, and click popup ---
   const handleGeographyClick = (geo, event) => {
-    // Try to get country name from geography properties
     const geoName = geo.properties?.name || geo.properties?.NAME || '';
     if (!geoName) return;
 
-    // Find matching country in our data (case‑insensitive)
     const matchedCountry = countries.find(
       (c) => c.country.toLowerCase() === geoName.toLowerCase()
     );
     if (!matchedCountry) return;
 
-    // Show popup near click position
     setPopupInfo({
       country: matchedCountry,
       x: event.clientX,
       y: event.clientY,
     });
+  };
+
+  const handleMouseEnter = (geo, event) => {
+    const geoName = geo.properties?.name || geo.properties?.NAME || '';
+    if (!geoName) return;
+
+    const matchedCountry = countries.find(
+      (c) => c.country.toLowerCase() === geoName.toLowerCase()
+    );
+    if (!matchedCountry) return;
+
+    setHoverInfo({
+      country: matchedCountry,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoverInfo(null);
   };
 
   const renderMap = () => (
@@ -204,12 +240,14 @@ const TopCountriesChart = ({
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                fill="#EAEAEC"
+                fill={getMapFill(geo.properties?.name || geo.properties?.NAME || '')}
                 stroke="#D6D6DA"
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent container click
+                  event.stopPropagation();
                   handleGeographyClick(geo, event);
                 }}
+                onMouseEnter={(event) => handleMouseEnter(geo, event)}
+                onMouseLeave={handleMouseLeave}
                 style={{
                   default: { outline: 'none' },
                   hover: { fill: '#F53', outline: 'none' },
@@ -221,20 +259,45 @@ const TopCountriesChart = ({
         </Geographies>
       </ComposableMap>
 
-      {/* Popup for clicked country */}
+      {/* Hover tooltip */}
+      {hoverInfo && (
+        <div
+          className="map-tooltip"
+          style={{
+            position: 'fixed',
+            left: hoverInfo.x + 10,
+            top: hoverInfo.y - 40,
+            backgroundColor: 'white',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '6px 10px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            zIndex: 1000,
+            pointerEvents: 'none',
+            fontSize: '13px',
+          }}
+        >
+          <strong>{hoverInfo.country.country}</strong>
+          <div style={{ marginTop: 2 }}>
+            Visitors: {hoverInfo.country.visitors.toLocaleString()}
+          </div>
+        </div>
+      )}
+
+      {/* Click popup */}
       {popupInfo && (
         <div
           className="map-popup"
           style={{
             position: 'fixed',
             left: popupInfo.x + 10,
-            top: popupInfo.y - 40,
+            top: popupInfo.y - 60,
             backgroundColor: 'white',
             border: '1px solid #ccc',
             borderRadius: '4px',
             padding: '8px',
             boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
-            zIndex: 1000,
+            zIndex: 1001,
             pointerEvents: 'none',
           }}
         >
@@ -258,12 +321,7 @@ const TopCountriesChart = ({
   return (
     <div className="top-countries-chart">
       <div className="view-mode-toggle">
-        <button
-          className={`toggle-btn ${viewMode === 'map' ? 'active' : ''}`}
-          onClick={() => setViewMode('map')}
-        >
-          Map
-        </button>
+        {/* Reordered tabs: Table first, then Chart, then Map */}
         <button
           className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
           onClick={() => setViewMode('table')}
@@ -276,12 +334,18 @@ const TopCountriesChart = ({
         >
           Chart
         </button>
+        <button
+          className={`toggle-btn ${viewMode === 'map' ? 'active' : ''}`}
+          onClick={() => setViewMode('map')}
+        >
+          Map
+        </button>
       </div>
 
       <div className="chart-content">
-        {viewMode === 'map' && renderMap()}
         {viewMode === 'table' && renderTable()}
         {viewMode === 'chart' && renderChart()}
+        {viewMode === 'map' && renderMap()}
       </div>
 
       {topCountry && (
