@@ -1,7 +1,7 @@
 // src/pages/RedirectPage/RedirectPage.jsx
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { urlAPI, analyticsAPI } from '../../services/api';
+import { urlAPI, analyticsAPI, textAPI } from '../../services/api';
 import SplashScreenView from './SplashScreenView';
 import TextPageView from './TextPageView';
 import './RedirectPage.css';
@@ -12,10 +12,16 @@ const RedirectPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [redirectData, setRedirectData] = useState(null);
+  const [urlData, setUrlData] = useState(null);                // store the initial URL data
+
+  // Password form states (combined for URL and text page)
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [textPageData, setTextPageData] = useState(null);
+  const [passwordNote, setPasswordNote] = useState('');        // note shown on password form
+  const [isTextPagePassword, setIsTextPagePassword] = useState(false); // true if unlocking text page
+
+  const [textPageData, setTextPageData] = useState(null);      // full text page data
 
   const [splashVisible, setSplashVisible] = useState(false);
   const [splashConfig, setSplashConfig] = useState(null);
@@ -28,6 +34,43 @@ const RedirectPage = () => {
   const maxRetries = 3;
   const hasTracked = useRef(false);
 
+  // Fetch text page (with optional password)
+  const fetchTextPage = useCallback(async (passwordAttempt = null) => {
+    try {
+      const response = await textAPI.getOne(alias, passwordAttempt);
+      if (response.data?.success && response.data.data?.textPage) {
+        setTextPageData(response.data.data.textPage);
+        setShowPasswordForm(false);
+        setIsTextPagePassword(false);
+        setPassword('');
+      } else {
+        // Fallback to minimal data (should not happen)
+        setTextPageData({
+          textContent: urlData?.textContent,
+          customization: urlData?.customization,
+          alias,
+          shortUrl: `${window.location.origin}/${alias}`,
+        });
+      }
+    } catch (err) {
+      if (err.response?.status === 401 && err.response.data?.requiresPassword) {
+        // Password required
+        setShowPasswordForm(true);
+        setIsTextPagePassword(true);
+        setPasswordNote(err.response.data.passwordNote || '');
+      } else {
+        console.error('Failed to fetch full text page:', err);
+        // Fallback to minimal data
+        setTextPageData({
+          textContent: urlData?.textContent,
+          customization: urlData?.customization,
+          alias,
+          shortUrl: `${window.location.origin}/${alias}`,
+        });
+      }
+    }
+  }, [alias, urlData]);
+
   const fetchRedirectData = useCallback(async () => {
     if (requestInProgress.current) return;
 
@@ -37,6 +80,8 @@ const RedirectPage = () => {
       setError(null);
       setSplashVisible(false);
       setTextPageData(null);
+      setShowPasswordForm(false);
+      setIsTextPagePassword(false);
 
       const response = await urlAPI.getUrl(alias);
 
@@ -46,47 +91,47 @@ const RedirectPage = () => {
         return;
       }
 
-      const urlData = response.data.data?.url || response.data.data;
+      const data = response.data.data?.url || response.data.data;
+      setUrlData(data);
 
-      if (!urlData) {
+      if (!data) {
         if (isMounted.current) {
           setError('The requested short URL could not be found in our system.');
         }
         return;
       }
 
-      // Track visit (only once, ignore 404 errors)
+      // Track visit (only once)
       if (!hasTracked.current) {
         try {
           await analyticsAPI.click(alias);
           hasTracked.current = true;
         } catch (trackError) {
           console.warn('Tracking unavailable (non‑fatal):', trackError.message);
-          // Don't break the flow
         }
       }
 
       if (isMounted.current) {
         // Status flags
-        if (urlData.type === 'paused' || urlData.active === false) {
+        if (data.type === 'paused' || data.active === false) {
           setRedirectData({
             type: 'paused',
-            customMessage: urlData.customMessage || 'This shortened URL has been temporarily suspended by the owner.'
+            customMessage: data.customMessage || 'This shortened URL has been temporarily suspended by the owner.'
           });
           setLoading(false);
           return;
         }
 
-        if (urlData.type === 'restricted' || urlData.restricted) {
+        if (data.type === 'restricted' || data.restricted) {
           setRedirectData({
             type: 'restricted',
-            message: urlData.restrictionReason || 'This URL has been restricted and cannot be accessed.'
+            message: data.restrictionReason || 'This URL has been restricted and cannot be accessed.'
           });
           setLoading(false);
           return;
         }
 
-        if (urlData.type === 'expired') {
+        if (data.type === 'expired') {
           setRedirectData({
             type: 'expired',
             message: 'This shortened URL has expired and is no longer active.'
@@ -95,38 +140,31 @@ const RedirectPage = () => {
           return;
         }
 
-        // Password protection
+        // Password protection (URL)
         const requiresPassword = !!(
-          urlData.passwordProtected ||
-          urlData.requiresPassword ||
-          urlData.passwordNote ||
-          urlData.protected
+          data.passwordProtected ||
+          data.requiresPassword ||
+          data.passwordNote ||
+          data.protected
         );
 
         if (requiresPassword) {
           setShowPasswordForm(true);
-          setRedirectData({
-            type: 'password',
-            note: urlData.passwordNote || urlData.note || null
-          });
+          setIsTextPagePassword(false);
+          setPasswordNote(data.passwordNote || data.note || null);
           setLoading(false);
           return;
         }
 
-        // Text page (no password) – check for textContent as fallback indicator
-        if (urlData.type === 'text' || urlData.textContent) {
-          setTextPageData({
-            textContent: urlData.textContent,
-            customization: urlData.customization,
-            alias: urlData.alias,
-            shortUrl: urlData.shortUrl
-          });
+        // Text page – fetch full details
+        if (data.type === 'text' || data.textContent) {
+          await fetchTextPage(); // try without password
           setLoading(false);
           return;
         }
 
-        // --- Regular URL logic ---
-        let destination = urlData.longUrl || urlData.destination || urlData.shortUrl;
+        // --- Regular URL logic (unchanged) ---
+        let destination = data.longUrl || data.destination || data.shortUrl;
         if (!destination) {
           setError('The requested short URL could not be found in our system.');
           setLoading(false);
@@ -134,19 +172,19 @@ const RedirectPage = () => {
         }
 
         // Scheduled redirect
-        if (urlData.scheduledRedirect?.enabled) {
+        if (data.scheduledRedirect?.enabled) {
           const now = new Date();
-          const start = new Date(urlData.scheduledRedirect.startDate);
+          const start = new Date(data.scheduledRedirect.startDate);
           if (now < start) {
             setRedirectData({
               type: 'scheduled',
-              message: urlData.scheduledRedirect.message || 'This link will be available later.',
-              startDate: urlData.scheduledRedirect.startDate
+              message: data.scheduledRedirect.message || 'This link will be available later.',
+              startDate: data.scheduledRedirect.startDate
             });
             setLoading(false);
             return;
           }
-          const end = urlData.scheduledRedirect.endDate ? new Date(urlData.scheduledRedirect.endDate) : null;
+          const end = data.scheduledRedirect.endDate ? new Date(data.scheduledRedirect.endDate) : null;
           if (end && now > end) {
             setRedirectData({
               type: 'expired',
@@ -158,12 +196,12 @@ const RedirectPage = () => {
         }
 
         // Expiration
-        if (urlData.expiration?.enabled && urlData.expiration.expireAt) {
+        if (data.expiration?.enabled && data.expiration.expireAt) {
           const now = new Date();
-          const expireAt = new Date(urlData.expiration.expireAt);
+          const expireAt = new Date(data.expiration.expireAt);
           if (now > expireAt) {
-            if (urlData.expiration.expiredRedirect) {
-              window.location.href = urlData.expiration.expiredRedirect;
+            if (data.expiration.expiredRedirect) {
+              window.location.href = data.expiration.expiredRedirect;
               return;
             } else {
               setRedirectData({
@@ -177,7 +215,7 @@ const RedirectPage = () => {
         }
 
         // Multiple destination rules
-        if (urlData.multipleDestinationRules && urlData.multipleDestinationRules.length > 0) {
+        if (data.multipleDestinationRules && data.multipleDestinationRules.length > 0) {
           setEvaluatingRules(true);
           try {
             const evalResponse = await urlAPI.evaluateRules(alias);
@@ -191,8 +229,8 @@ const RedirectPage = () => {
         }
 
         // Splash screen
-        if (urlData.splashScreen?.enabled) {
-          setSplashConfig(urlData.splashScreen);
+        if (data.splashScreen?.enabled) {
+          setSplashConfig(data.splashScreen);
           setSplashVisible(true);
           setRedirectUrl(destination);
           setLoading(false);
@@ -239,7 +277,7 @@ const RedirectPage = () => {
       if (isMounted.current) setLoading(false);
       requestInProgress.current = false;
     }
-  }, [alias]);
+  }, [alias, fetchTextPage]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -252,7 +290,7 @@ const RedirectPage = () => {
     };
   }, [fetchRedirectData]);
 
-  // Password submission
+  // Password submission (handles both URL and text page passwords)
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     setPasswordError('');
@@ -261,44 +299,46 @@ const RedirectPage = () => {
       return;
     }
 
-    try {
-      const response = await urlAPI.verifyPassword(alias, { password });
+    if (isTextPagePassword) {
+      // Text page password – fetch full page with password
+      await fetchTextPage(password);
+    } else {
+      // URL password
+      try {
+        const response = await urlAPI.verifyPassword(alias, { password });
 
-      if (response.data && response.data.valid) {
-        // Check if this is a text page (either by type or presence of textContent)
-        if (response.data.type === 'text' || response.data.textContent) {
-          setTextPageData({
-            textContent: response.data.textContent,
-            customization: response.data.customization,
-            alias: response.data.alias || alias,
-            shortUrl: response.data.shortUrl
-          });
-          setShowPasswordForm(false);
-          setLoading(false);
-        } else {
-          // Regular URL – redirect
-          const dest = response.data.redirectTo || response.data.redirectUrl;
-          if (dest) {
-            window.location.href = dest;
-            return;
+        if (response.data && response.data.valid) {
+          // Check if this is a text page (maybe returned after password)
+          if (response.data.type === 'text' || response.data.textContent) {
+            // ✅ Now fetch the full text page data using the password
+            await fetchTextPage(password);
+          } else {
+            // Regular URL – redirect
+            const dest = response.data.redirectTo || response.data.redirectUrl;
+            if (dest) {
+              window.location.href = dest;
+              return;
+            }
+            // fallback
+            window.location.href = `/api/urls/redirect/${alias}?password=${encodeURIComponent(password)}`;
           }
-          // fallback
-          window.location.href = `/api/urls/redirect/${alias}?password=${encodeURIComponent(password)}`;
+        } else {
+          setPasswordError('Incorrect password - Please try again');
         }
-      } else {
-        setPasswordError('Incorrect password - Please try again');
-      }
-    } catch (err) {
-      console.error('Password verification error:', err);
-      if (err.response?.status === 401) {
-        setPasswordError('Incorrect password - Please try again');
-      } else if (err.response?.status === 429) {
-        setPasswordError('Too many attempts. Please wait a moment and try again.');
-      } else {
-        setPasswordError(err.response?.data?.message || 'An unexpected error occurred');
+      } catch (err) {
+        console.error('Password verification error:', err);
+        if (err.response?.status === 401) {
+          setPasswordError('Incorrect password - Please try again');
+        } else if (err.response?.status === 429) {
+          setPasswordError('Too many attempts. Please wait a moment and try again.');
+        } else {
+          setPasswordError(err.response?.data?.message || 'An unexpected error occurred');
+        }
       }
     }
   };
+
+  // ... (splash handlers, redirect handlers unchanged)
 
   const handleSplashContinue = () => {
     if (redirectUrl) window.location.href = redirectUrl;
@@ -354,23 +394,25 @@ const RedirectPage = () => {
   if (textPageData) {
     return (
       <TextPageView
+        _id={textPageData._id}
         textContent={textPageData.textContent}
         customization={textPageData.customization}
         alias={textPageData.alias}
         shortUrl={textPageData.shortUrl}
+        replies={textPageData.replies}
       />
     );
   }
 
-  // Render password form
+  // Render password form (for URL or text page)
   if (showPasswordForm) {
     return (
       <div className="password-redirect">
         <div className="password-form-container">
-          <h2>🔒 Password Protected URL</h2>
-          {redirectData?.note && (
+          <h2>🔒 Password Protected {isTextPagePassword ? 'Text Page' : 'URL'}</h2>
+          {passwordNote && (
             <div className="password-note">
-              <p>{redirectData.note}</p>
+              <p>{passwordNote}</p>
             </div>
           )}
 
@@ -385,7 +427,7 @@ const RedirectPage = () => {
                   setPassword(e.target.value);
                   setPasswordError('');
                 }}
-                placeholder="Enter password to access this URL"
+                placeholder="Enter password"
                 className={passwordError ? 'error' : ''}
                 required
                 autoFocus
@@ -399,7 +441,7 @@ const RedirectPage = () => {
           </form>
 
           <div className="password-footer">
-            <p>Forgot password? Contact the URL owner for access.</p>
+            <p>Forgot password? Contact the owner for access.</p>
           </div>
         </div>
       </div>
@@ -420,6 +462,7 @@ const RedirectPage = () => {
 
   // Render status messages (paused, restricted, expired, scheduled, redirecting)
   const renderRedirectMessage = () => {
+    // ... (unchanged, same as before)
     switch (redirectData?.type) {
       case 'paused':
         return (
@@ -491,7 +534,6 @@ const RedirectPage = () => {
           <div className="redirect-message redirecting">
             <h2>↪️ Redirecting...</h2>
             <div className="message-content">
-
               <div className="redirect-timer">
                 <div className="timer-bar"></div>
                 <span>Redirecting...</span>

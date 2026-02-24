@@ -288,7 +288,11 @@ export const textAPI = {
   create: (payload) => api.post('/text', payload),
   getAll: (params) => api.get('/text', { params }),
   getTextPages: (params) => api.get('/text', { params }), // alias
-  getOne: (alias) => api.get(`/text/${encodeURIComponent(alias)}`),
+  getOne: (alias, password) => {                          // ✅ updated: accept password
+    const params = {};
+    if (password) params.password = password;
+    return api.get(`/text/${encodeURIComponent(alias)}`, { params });
+  },
   update: (id, payload) => api.put(`/text/${id}`, payload),
   delete: (id) => api.delete(`/text/${id}`),
   deleteTextPage: (id) => api.delete(`/text/${id}`),

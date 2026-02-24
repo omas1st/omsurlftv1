@@ -11,7 +11,7 @@ const TextDestination = () => {
   const [text, setText] = useState('');
   const [customAlias, setCustomAlias] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showCustomization, setShowCustomization] = useState(false); // new state
+  const [showCustomization, setShowCustomization] = useState(false);
   const [generatedData, setGeneratedData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -134,11 +134,32 @@ const TextDestination = () => {
           </small>
         </div>
 
+        {/* Separate Response Settings Section */}
+        <div className="response-settings">
+          <div className="response-toggle-container">
+            <label className="response-toggle-label">
+              <span>Allow visitors to respond</span>
+              <div className="toggle-wrapper">
+                <input
+                  type="checkbox"
+                  checked={customization.allowResponse}
+                  onChange={(e) => setCustomization(prev => ({ ...prev, allowResponse: e.target.checked }))}
+                  id="allowResponse"
+                />
+                <label htmlFor="allowResponse" className="toggle-switch"></label>
+              </div>
+            </label>
+            <small className="response-description">
+              When enabled, visitors can reply to your text page. Replies appear immediately.
+            </small>
+          </div>
+        </div>
+
         {/* Collapsible Customization Section */}
         <div className="customization-section">
           <button
             type="button"
-            className="customize-btn"  // you can style this similarly to .advanced-btn
+            className="customize-btn"
             onClick={() => setShowCustomization(!showCustomization)}
           >
             Customize Appearance {showCustomization ? '▲' : '▼'}
@@ -204,24 +225,6 @@ const TextDestination = () => {
                   />
                   <span>{customization.textSize}px</span>
                 </div>
-              </div>
-
-              <div className="response-toggle">
-                <label className="toggle-label">
-                  <span>Allow Response</span>
-                  <input
-                    type="checkbox"
-                    checked={customization.allowResponse}
-                    onChange={(e) => setCustomization(prev => ({
-                      ...prev,
-                      allowResponse: e.target.checked
-                    }))}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-                <small className="toggle-description">
-                  Allow visitors to respond to your text page
-                </small>
               </div>
             </div>
           )}
